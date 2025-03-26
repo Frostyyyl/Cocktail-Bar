@@ -1,11 +1,13 @@
 package com.example.cocktail_bar
 
 import android.R.attr.button
+import android.R.attr.onClick
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,118 +29,136 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
 import coil.compose.AsyncImage
 import com.example.cocktail_bar.ui.theme.CocktailBarTheme
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import com.example.cocktail_bar.Drink
+
 
 class MainActivity : ComponentActivity() {
+    private val viewModel: CocktailViewModel by viewModels()
+    val cocktailsNum = 10
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        viewModel.fetchRandomCocktails(cocktailsNum)
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val cocktails = viewModel.cocktails.value
+
             CocktailBarTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    CocktailList(
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    if (isTablet()){
+
+                        Text(text = "TO DO")
+
+                    } else {
+
+                        CocktailList(Modifier.padding(innerPadding), cocktails)
+                        RefreshButton(onClick = { viewModel.fetchRandomCocktails(cocktailsNum) })
+
+                    }
                 }
+            }
+        }
+    }
+
+    private fun isTablet(): Boolean {
+        return false
+    }
+}
+
+@Composable
+fun CocktailList(modifier: Modifier = Modifier, cocktails: List<Cocktail>) {
+    val scrollState = rememberScrollState(initial = 0)
+
+    Column(modifier = modifier
+        .fillMaxWidth()
+        .padding(horizontal = 8.dp)
+        .verticalScroll(scrollState)
+    ) {
+        for (cocktail in cocktails) {
+            CocktailItem(cocktail)
+        }
+    }
+}
+
+@Composable
+fun CocktailItem(cocktail: Cocktail) {
+    val context = LocalContext.current
+    val paddingPrimary = 8.dp
+    val tagsModifier = Modifier
+        .background(MaterialTheme.colorScheme.tertiary)
+        .padding(4.dp)
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(paddingPrimary)
+            .clip(shape = RoundedCornerShape(paddingPrimary))
+            .background(MaterialTheme.colorScheme.primary)
+            .clickable {
+                val intent = Intent(context, DetailsActivity::class.java).apply {
+                    putExtra("cocktail", cocktail)
+                }
+                context.startActivity(intent)
+            },
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        AsyncImage(
+            model = cocktail.imageLink,
+            modifier = Modifier
+                .width(100.dp)
+                .height(100.dp),
+            contentDescription = "Cocktail Image",
+            placeholder = painterResource(id = R.drawable.ic_launcher_background),
+        )
+
+        Column {
+            Text(
+                text = cocktail.name,
+                modifier = Modifier.padding(paddingPrimary)
+            )
+
+            Row(
+                modifier = Modifier.padding(paddingPrimary)
+            ) {
+                Text(
+                    text = cocktail.category,
+                    modifier = tagsModifier,
+                    style = MaterialTheme.typography.labelSmall
+                )
+
+                Spacer(modifier = Modifier.size(paddingPrimary))
+
+                Text(
+                    text = cocktail.alcoholic,
+                    modifier = tagsModifier,
+                    style = MaterialTheme.typography.labelSmall
+                )
             }
         }
     }
 }
 
 @Composable
-fun CocktailList(modifier: Modifier = Modifier) {
-    val scrollState = rememberScrollState(initial = 0)
-    val colors = MaterialTheme.colorScheme
-    val context = LocalContext.current
-
-    val viewModel: CocktailViewModel = remember { CocktailViewModel() }
-    LaunchedEffect(Unit) {
-        viewModel.fetchRandomCocktails()
-    }
-    val cocktails = viewModel.cocktails.value.drinks
-
-    Box(modifier = modifier.fillMaxSize()) {
-        Column(modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 8.dp)
-            .verticalScroll(scrollState)
-        ) {
-            if (cocktails != null) {
-                for (cocktail in cocktails) {
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp)
-                            .clip(shape = RoundedCornerShape(8.dp))
-                            .background(colors.primary)
-                            .clickable {
-                                val intent = Intent(context, DetailsActivity::class.java).apply {
-                                    putExtra("drinkName", cocktail.strDrink)
-                                }
-                                context.startActivity(intent)
-                            },
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        AsyncImage(
-                            model = cocktail.strDrinkThumb,
-                            contentDescription = "Cocktail Image",
-                            modifier = Modifier
-                                .width(100.dp)
-                                .height(100.dp),
-                            placeholder = painterResource(id = R.drawable.ic_launcher_background),
-                        )
-                        Column {
-                            Row(
-                                modifier = Modifier.padding(8.dp)
-                            ) {
-                                Text(text = cocktail.strDrink)
-                            }
-
-                            Row(
-                                modifier = Modifier.padding(8.dp)
-                            ) {
-                                Text(
-                                    text = cocktail.strCategory,
-                                    style = MaterialTheme.typography.labelSmall,
-                                    modifier = Modifier
-                                        .background(colors.tertiary)
-                                        .padding(4.dp)
-                                )
-                                Spacer(modifier = Modifier.size(8.dp))
-                                Text(
-                                    text = cocktail.strAlcoholic,
-                                    style = MaterialTheme.typography.labelSmall,
-                                    modifier = Modifier
-                                        .background(colors.tertiary)
-                                        .padding(4.dp)
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-            else {
-                Text(
-                    text = "Loading..."
-                )
-            }
-        }
-
-        // Anchor the button to the bottom of the screen
+fun RefreshButton(onClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
         Button(
-            onClick = { viewModel.fetchRandomCocktails() },
+            onClick = onClick,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(16.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = colors.secondary
+                containerColor = MaterialTheme.colorScheme.secondary
             )
         ) {
             Icon(

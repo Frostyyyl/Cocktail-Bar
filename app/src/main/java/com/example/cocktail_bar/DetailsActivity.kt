@@ -1,7 +1,12 @@
 package com.example.cocktail_bar
 
+import android.R.attr.category
+import android.R.attr.fontWeight
 import android.R.attr.text
+import android.app.Activity
+import android.app.PendingIntent.getActivity
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -39,6 +44,7 @@ import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -56,138 +62,149 @@ class DetailsActivity : ComponentActivity() {
         setContent {
             CocktailBarTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    DetailView(
-                        modifier = Modifier.padding(innerPadding),
-                        drinkName = intent.getStringExtra("drinkName") ?: "Unknown Drink")
+
+                    val cocktail: Cocktail = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        intent.getParcelableExtra("cocktail", Cocktail::class.java)
+                    } else {
+                        @Suppress("DEPRECATION")
+                        intent.getParcelableExtra("cocktail")
+                    } ?: Cocktail( // In case of null reference
+                        id = "0",
+                        name = "Unknown Cocktail",
+                        imageLink = "",
+                        category = "Unknown",
+                        alcoholic = "Unknown",
+                        instructions = "No instructions available",
+                        ingredients = arrayListOf(),
+                        measurements = arrayListOf()
+                    )
+
+                    Column(
+                        modifier = Modifier.padding(innerPadding).padding(16.dp)
+                    ) {
+                        ReturnButton()
+                        Spacer(modifier = Modifier.size(24.dp))
+                        CocktailDetails(
+                            cocktail = cocktail
+                        )
+                    }
                 }
             }
         }
     }
 }
 @Composable
-fun DetailView(modifier: Modifier = Modifier, drinkName: String) {
-    val colors = MaterialTheme.colorScheme
+fun CocktailDetails(cocktail: Cocktail) {
+    Column(
+        modifier = Modifier.fillMaxWidth()
+            .clip(shape = RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.primary)
+            .padding(16.dp),
+        horizontalAlignment = Alignment.Start
+    ) {
+
+        Text(
+            text = cocktail.name,
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.titleLarge,
+        )
+
+        AsyncImage(
+            model = cocktail.imageLink,
+            contentDescription = "Cocktail Image",
+            modifier = Modifier
+                .padding(16.dp)
+                .width(200.dp)
+                .height(200.dp)
+                .align(Alignment.CenterHorizontally),
+            placeholder = painterResource(id = R.drawable.ic_launcher_background),
+        )
+
+        Spacer(modifier = Modifier.size(4.dp))
+
+        val style = SpanStyle(
+            fontWeight = FontWeight.ExtraBold,
+            color = Color.DarkGray,
+            fontSize = 20.sp
+        )
+
+        CocktailCategory(cocktail.category, style)
+        CocktailIsAlcoholic(cocktail.alcoholic, style)
+        CocktailIngredients(cocktail.ingredients, cocktail.measurements, style)
+        CocktailInstructions(cocktail.instructions, style)
+    }
+}
+
+@Composable
+fun CocktailCategory(category: String, style: SpanStyle) {
+    Text(
+        buildAnnotatedString {
+            withStyle(style = style) {
+                append("Category: ")
+            }
+            append(category)
+        }
+    )
+}
+
+@Composable
+fun CocktailIsAlcoholic(alcoholic: String, style: SpanStyle) {
+    var isAlcoholic = "Optionally"
+
+    if (alcoholic == "Alcoholic") {
+        isAlcoholic = "Yes"
+    } else if (alcoholic == "Non Alcoholic") {
+        isAlcoholic == "No"
+    }
+
+    Text(
+        buildAnnotatedString {
+            withStyle(style = style) {
+                append("Alcoholic: ")
+            }
+            append(isAlcoholic)
+        }
+    )
+}
+
+@Composable
+fun CocktailIngredients(ingredients: List<String>, measurements: List<String>, style: SpanStyle){
+    Text(
+        buildAnnotatedString {
+            withStyle(style = style) {
+                append("Ingredients: \n")
+            }
+            for (i in measurements.indices) {
+                append("> ${measurements[i]}of ${ingredients[i]}\n")
+            }
+        }
+    )
+}
+
+@Composable
+fun CocktailInstructions(instructions: String, style: SpanStyle) {
+    Text(
+        buildAnnotatedString {
+            withStyle(style = style) {
+                append("Instructions: ")
+            }
+            append(instructions.replaceFirstChar { it.uppercase() })
+        }
+    )
+}
+
+@Composable
+fun ReturnButton() {
     val context = LocalContext.current
 
-    val viewModel: CocktailViewModel = remember { CocktailViewModel() }
-    LaunchedEffect(Unit) {
-        viewModel.fetchCocktailDetails(drinkName)
-    }
-    val drinkDetails = viewModel.cocktailDetails.value
-
-    Column (modifier = modifier.padding(16.dp)){
-        Button(onClick = {
-            context.startActivity(Intent(context, MainActivity::class.java))}
-        ) {
-            Icon(imageVector = Icons.Default.PlayArrow, contentDescription = null,
-                modifier = Modifier.scale(scaleX = -1f, scaleY = 1f))
-        }
-        Spacer(modifier = Modifier.size(24.dp))
-        Column(
-            modifier = Modifier.fillMaxWidth()
-                .clip(shape = RoundedCornerShape(16.dp))
-                .background(colors.primary)
-                .padding(16.dp),
-            horizontalAlignment = Alignment.Start
-        ) {
-
-            Text(
-                text = "${drinkDetails?.strDrink}",
-                textAlign = TextAlign.Center,
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-                style = MaterialTheme.typography.titleLarge,
-            )
-
-            AsyncImage(
-                model = drinkDetails?.strDrinkThumb,
-                contentDescription = "Cocktail Image",
-                modifier = Modifier
-                    .padding(16.dp)
-                    .width(200.dp)
-                    .height(200.dp)
-                    .align(Alignment.CenterHorizontally),
-                placeholder = painterResource(id = R.drawable.ic_launcher_background),
-            )
-
-            Spacer(modifier = Modifier.size(4.dp))
-            Text(
-                buildAnnotatedString {
-                    withStyle(style = SpanStyle(fontWeight = FontWeight.ExtraBold, color = Color.DarkGray,
-                        fontSize = 20.sp)) {
-                        append("Category:")
-                    }
-                    append(" ${drinkDetails?.strCategory}")
-                }
-            )
-            Text(
-                buildAnnotatedString {
-                    withStyle(style = SpanStyle(fontWeight = FontWeight.ExtraBold,
-                        color = Color.DarkGray,
-                        fontSize = 20.sp)) {
-                        append("Alcoholic:")
-                    }
-                    append(" ${drinkDetails?.strAlcoholic}")
-                }
-            )
-            Text(
-                text = "Ingredients:",
-                fontWeight = FontWeight.ExtraBold,
-                color = Color.DarkGray,
-                fontSize = 20.sp)
-            // For each ingredient and measure
-            (1..15).forEach { i ->
-                val ingredient = when (i) {
-                    1 -> drinkDetails?.strIngredient1
-                    2 -> drinkDetails?.strIngredient2
-                    3 -> drinkDetails?.strIngredient3
-                    4 -> drinkDetails?.strIngredient4
-                    5 -> drinkDetails?.strIngredient5
-                    6 -> drinkDetails?.strIngredient6
-                    7 -> drinkDetails?.strIngredient7
-                    8 -> drinkDetails?.strIngredient8
-                    9 -> drinkDetails?.strIngredient9
-                    10 -> drinkDetails?.strIngredient10
-                    11 -> drinkDetails?.strIngredient11
-                    12 -> drinkDetails?.strIngredient12
-                    13 -> drinkDetails?.strIngredient13
-                    14 -> drinkDetails?.strIngredient14
-                    15 -> drinkDetails?.strIngredient15
-                    else -> null
-                } ?: ""
-
-                val measure = when (i) {
-                    1 -> drinkDetails?.strMeasure1
-                    2 -> drinkDetails?.strMeasure2
-                    3 -> drinkDetails?.strMeasure3
-                    4 -> drinkDetails?.strMeasure4
-                    5 -> drinkDetails?.strMeasure5
-                    6 -> drinkDetails?.strMeasure6
-                    7 -> drinkDetails?.strMeasure7
-                    8 -> drinkDetails?.strMeasure8
-                    9 -> drinkDetails?.strMeasure9
-                    10 -> drinkDetails?.strMeasure10
-                    11 -> drinkDetails?.strMeasure11
-                    12 -> drinkDetails?.strMeasure12
-                    13 -> drinkDetails?.strMeasure13
-                    14 -> drinkDetails?.strMeasure14
-                    15 -> drinkDetails?.strMeasure15
-                    else -> null
-                } ?: ""
-
-                if (ingredient.isNotBlank()) {
-                    Text(text = "$measure - $ingredient")
-                }
-            }
-            Text(
-                buildAnnotatedString {
-                    withStyle(style = SpanStyle(fontWeight = FontWeight.ExtraBold,
-                        color = Color.DarkGray,
-                        fontSize = 20.sp)) {
-                        append("Instructions:")
-                    }
-                    append(" ${drinkDetails?.strInstructions}")
-                }
-            )
-        }
+    Button(onClick = { (context as Activity).finish() }
+    ) {
+        Icon(
+            imageVector = Icons.Default.PlayArrow,
+            contentDescription = null,
+            modifier = Modifier.scale(scaleX = -1f, scaleY = 1f)
+        )
     }
 }

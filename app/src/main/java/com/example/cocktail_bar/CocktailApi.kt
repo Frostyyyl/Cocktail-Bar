@@ -1,18 +1,24 @@
 package com.example.cocktail_bar
 
-import android.R
-import androidx.compose.runtime.MutableState
+import android.R.attr.data
+import android.os.Parcelable
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.State
-import retrofit2.Call
+import kotlinx.parcelize.Parcelize
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
+import kotlin.collections.firstOrNull
 import kotlin.jvm.java
+
+interface CocktailApi {
+    @GET("random.php")
+    suspend fun getRandomCocktail(): CocktailsDataList
+}
 
 object RetrofitInstance {
     private const val BASE_URL = "https://www.thecocktaildb.com/api/json/v1/1/"
@@ -26,80 +32,51 @@ object RetrofitInstance {
     }
 }
 
-interface CocktailApi {
-    @GET("random.php")
-    suspend fun getRandomCocktail(): Drinks
-
-    @GET("search.php")
-    suspend fun getCocktailDetails(@Query("s") cocktailName: String) : Details
-}
-
 class CocktailViewModel : ViewModel() {
-    private val _cocktails = mutableStateOf(Drinks(emptyList())) // Initialize properly
-    val cocktails: State<Drinks> = _cocktails
+    private val _cocktails = mutableStateOf<List<Cocktail>>(emptyList())
+    val cocktails: State<List<Cocktail>> = _cocktails
 
-    fun fetchRandomCocktails(num: Int = 10) {
+    fun fetchRandomCocktails(num: Int) {
         viewModelScope.launch {
-            val newDrinks = mutableListOf<Drink>()
+            val newCocktails = mutableListOf<Cocktail>()
 
             for (i in 1..num) {
                 try {
                     val response = RetrofitInstance.api.getRandomCocktail()
-                    response.drinks?.firstOrNull()?.let { drink ->
-                        newDrinks.add(drink)
-                    }
+                    newCocktails.add(response.drinks[0].toCocktail())
                 } catch (e: Exception) {
                     println("Error fetching cocktail: ${e.message}")
                 }
             }
 
-            _cocktails.value = Drinks(drinks = newDrinks)
-        }
-    }
-
-    private val _cocktailDetails = mutableStateOf<DrinkDetails?>(null) // Initialize properly
-    val cocktailDetails: State<DrinkDetails?> = _cocktailDetails
-
-    fun fetchCocktailDetails(cocktailName: String){
-        viewModelScope.launch {
-            try {
-                // Fetch cocktail details based on cocktail name
-                val response = RetrofitInstance.api.getCocktailDetails(cocktailName)
-                response.drinks?.firstOrNull()?.let { drink ->
-                    _cocktailDetails.value = drink
-                }
-            } catch (e: Exception) {
-                // Handle error
-                println("Error fetching cocktail details: ${e.message}")
-            }
+            _cocktails.value = newCocktails
         }
     }
 }
 
-
-
-data class Drinks(
-    val drinks: List<Drink>?
+data class CocktailsDataList(
+    val drinks: List<CocktailData>
 )
 
-data class Drink(
-    val strDrink: String,
-    val strDrinkThumb: String,
-    val strCategory: String,
-    val strAlcoholic: String
-)
+@Parcelize
+data class Cocktail(
+    val id: String,
+    val name: String,
+    val imageLink: String,
+    val category: String,
+    val alcoholic: String,
+    val instructions: String,
+    val ingredients: List<String>,
+    val measurements: List<String>
+) : Parcelable
 
-data class Details(
-    val drinks: List<DrinkDetails>?
-)
-
-data class DrinkDetails(
+data class CocktailData(
+    val idDrink: String,
     val strDrink: String,
     val strDrinkThumb: String,
     val strCategory: String,
     val strAlcoholic: String,
     val strInstructions: String,
-
     val strIngredient1: String?,
     val strIngredient2: String?,
     val strIngredient3: String?,
@@ -115,7 +92,6 @@ data class DrinkDetails(
     val strIngredient13: String?,
     val strIngredient14: String?,
     val strIngredient15: String?,
-
     val strMeasure1: String?,
     val strMeasure2: String?,
     val strMeasure3: String?,
@@ -131,4 +107,49 @@ data class DrinkDetails(
     val strMeasure13: String?,
     val strMeasure14: String?,
     val strMeasure15: String?,
-)
+) {
+    fun toCocktail(): Cocktail {
+        return Cocktail(
+            id = idDrink,
+            name = strDrink,
+            imageLink = strDrinkThumb,
+            category = strCategory,
+            alcoholic = strAlcoholic,
+            instructions = strInstructions,
+            ingredients = listOfNotNull(
+                strIngredient1,
+                strIngredient2,
+                strIngredient3,
+                strIngredient4,
+                strIngredient5,
+                strIngredient6,
+                strIngredient7,
+                strIngredient8,
+                strIngredient9,
+                strIngredient10,
+                strIngredient11,
+                strIngredient12,
+                strIngredient13,
+                strIngredient14,
+                strIngredient15
+            ).filter { it.isNotBlank() },
+            measurements = listOfNotNull(
+                strMeasure1,
+                strMeasure2,
+                strMeasure3,
+                strMeasure4,
+                strMeasure5,
+                strMeasure6,
+                strMeasure7,
+                strMeasure8,
+                strMeasure9,
+                strMeasure10,
+                strMeasure11,
+                strMeasure12,
+                strMeasure13,
+                strMeasure14,
+                strMeasure15,
+            ).filter { it.isNotBlank() }
+        )
+    }
+}
