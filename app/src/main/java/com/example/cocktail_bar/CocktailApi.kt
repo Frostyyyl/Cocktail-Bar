@@ -1,5 +1,7 @@
 package com.example.cocktail_bar
 
+import android.R
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,6 +11,7 @@ import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
+import retrofit2.http.Query
 import kotlin.jvm.java
 
 object RetrofitInstance {
@@ -26,29 +29,52 @@ object RetrofitInstance {
 interface CocktailApi {
     @GET("random.php")
     suspend fun getRandomCocktail(): Drinks
+
+    @GET("search.php")
+    suspend fun getCocktailDetails(@Query("s") cocktailName: String) : Details
 }
 
 class CocktailViewModel : ViewModel() {
+    private val _cocktails = mutableStateOf(Drinks(emptyList())) // Initialize properly
+    val cocktails: State<Drinks> = _cocktails
 
-    private val _cocktail = mutableStateOf<Drink?>(null)
-    val cocktail: State<Drink?> = _cocktail
+    fun fetchRandomCocktails(num: Int = 10) {
+        viewModelScope.launch {
+            val newDrinks = mutableListOf<Drink>()
 
-    fun fetchRandomCocktail() {
+            for (i in 1..num) {
+                try {
+                    val response = RetrofitInstance.api.getRandomCocktail()
+                    response.drinks?.firstOrNull()?.let { drink ->
+                        newDrinks.add(drink)
+                    }
+                } catch (e: Exception) {
+                    println("Error fetching cocktail: ${e.message}")
+                }
+            }
+
+            _cocktails.value = Drinks(drinks = newDrinks)
+        }
+    }
+
+    private val _cocktailDetails = mutableStateOf<DrinkDetails?>(null) // Initialize properly
+    val cocktailDetails: State<DrinkDetails?> = _cocktailDetails
+
+    fun fetchCocktailDetails(cocktailName: String){
         viewModelScope.launch {
             try {
-                val response = RetrofitInstance.api.getRandomCocktail()
-                if (response.drinks != null && response.drinks.isNotEmpty()) {
-                    val drink = response.drinks[0]
-                    println("Drink Image URL: ${drink.strDrinkThumb}") // Debugging line
-                    _cocktail.value = drink
+                // Fetch cocktail details based on cocktail name
+                val response = RetrofitInstance.api.getCocktailDetails(cocktailName)
+                response.drinks?.firstOrNull()?.let { drink ->
+                    _cocktailDetails.value = drink
                 }
             } catch (e: Exception) {
-                println("Error fetching cocktail: ${e.message}") // Debugging line
+                // Handle error
+                println("Error fetching cocktail details: ${e.message}")
             }
         }
     }
 }
-
 
 
 
@@ -60,7 +86,11 @@ data class Drink(
     val strDrink: String,
     val strDrinkThumb: String,
     val strCategory: String,
-    val strAlcoholic: String,
+    val strAlcoholic: String
+)
+
+data class Details(
+    val drinks: List<DrinkDetails>?
 )
 
 data class DrinkDetails(
