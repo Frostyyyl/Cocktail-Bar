@@ -4,6 +4,7 @@ import android.R.attr.button
 import android.R.attr.onClick
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -20,6 +21,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -33,15 +35,17 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
+import androidx.window.core.layout.WindowSizeClass
+import androidx.window.core.layout.WindowWidthSizeClass
 import coil.compose.AsyncImage
 import com.example.cocktail_bar.ui.theme.CocktailBarTheme
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
+const val cocktailsNum = 10
 
 class MainActivity : ComponentActivity() {
     private val viewModel: CocktailViewModel by viewModels()
-    val cocktailsNum = 10
 
     override fun onCreate(savedInstanceState: Bundle?) {
         viewModel.fetchRandomCocktails(cocktailsNum)
@@ -49,27 +53,41 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val cocktails = viewModel.cocktails.value
-
-            CocktailBarTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    if (isTablet()){
-
-                        Text(text = "TO DO")
-
-                    } else {
-
-                        CocktailList(Modifier.padding(innerPadding), cocktails)
-                        RefreshButton(onClick = { viewModel.fetchRandomCocktails(cocktailsNum) })
-
-                    }
-                }
-            }
+            val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+            CocktailApp(windowSizeClass, viewModel)
         }
     }
+}
 
-    private fun isTablet(): Boolean {
-        return false
+@Composable
+private fun isTablet(windowSizeClass: WindowSizeClass): Boolean {
+    return windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.EXPANDED
+}
+
+@Composable
+fun CocktailApp(windowSizeClass: WindowSizeClass, viewModel: CocktailViewModel) {
+    val cocktails = viewModel.cocktails.value
+    CocktailBarTheme {
+        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+            if (isTablet(windowSizeClass)){
+                Row (modifier = Modifier.padding(innerPadding)) {
+                    CocktailList(Modifier
+                        .padding(innerPadding)
+                        .weight(1f),
+                        cocktails)
+                    Column(Modifier.weight(1f)) {
+                        Text(text = "TO DO")
+                    }
+                }
+                RefreshButton(onClick = { viewModel.fetchRandomCocktails(cocktailsNum) })
+
+            } else {
+
+                CocktailList(Modifier.padding(innerPadding), cocktails)
+                RefreshButton(onClick = { viewModel.fetchRandomCocktails(cocktailsNum) })
+
+            }
+        }
     }
 }
 
@@ -78,7 +96,6 @@ fun CocktailList(modifier: Modifier = Modifier, cocktails: List<Cocktail>) {
     val scrollState = rememberScrollState(initial = 0)
 
     Column(modifier = modifier
-        .fillMaxWidth()
         .padding(horizontal = 8.dp)
         .verticalScroll(scrollState)
     ) {
