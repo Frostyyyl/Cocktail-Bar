@@ -48,44 +48,52 @@ class MainActivity : ComponentActivity() {
     private val viewModel: CocktailViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        viewModel.fetchRandomCocktails(cocktailsNum)
-
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        viewModel.fetchRandomCocktails(cocktailsNum)
         setContent {
-            val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-            CocktailApp(windowSizeClass, viewModel)
+            CocktailApp(viewModel)
         }
     }
 }
 
 @Composable
-private fun isTablet(windowSizeClass: WindowSizeClass): Boolean {
+private fun isTablet(): Boolean {
+    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     return windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.EXPANDED
 }
 
 @Composable
-fun CocktailApp(windowSizeClass: WindowSizeClass, viewModel: CocktailViewModel) {
+fun CocktailApp(viewModel: CocktailViewModel) {
     val cocktails = viewModel.cocktails.value
     CocktailBarTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-            if (isTablet(windowSizeClass)){
+            if (isTablet()){
+
                 Row (modifier = Modifier.padding(innerPadding)) {
-                    CocktailList(Modifier
-                        .padding(innerPadding)
-                        .weight(1f),
-                        cocktails)
-                    Column(Modifier.weight(1f)) {
-                        Text(text = "TO DO")
+                    CocktailList(Modifier.weight(2f), cocktails)
+                    Box(
+                        Modifier
+                            .weight(3f)
+                            .padding(end = 16.dp)
+                            .align(Alignment.CenterVertically)
+                    ) {
+                        if (cocktails.isNotEmpty()) {
+                            CocktailDetails(cocktails[0])
+                        }
                     }
                 }
-                RefreshButton(onClick = { viewModel.fetchRandomCocktails(cocktailsNum) })
+                RefreshButton(onClick = {
+                    viewModel.fetchRandomCocktails(cocktailsNum)
+                })
 
             } else {
 
                 CocktailList(Modifier.padding(innerPadding), cocktails)
-                RefreshButton(onClick = { viewModel.fetchRandomCocktails(cocktailsNum) })
-
+                RefreshButton(
+                    modifier = Modifier.padding(innerPadding),
+                    onClick = { viewModel.fetchRandomCocktails(cocktailsNum) }
+                )
             }
         }
     }
@@ -96,7 +104,7 @@ fun CocktailList(modifier: Modifier = Modifier, cocktails: List<Cocktail>) {
     val scrollState = rememberScrollState(initial = 0)
 
     Column(modifier = modifier
-        .padding(horizontal = 8.dp)
+        .padding(horizontal = 16.dp)
         .verticalScroll(scrollState)
     ) {
         for (cocktail in cocktails) {
@@ -108,7 +116,7 @@ fun CocktailList(modifier: Modifier = Modifier, cocktails: List<Cocktail>) {
 @Composable
 fun CocktailItem(cocktail: Cocktail) {
     val context = LocalContext.current
-    val paddingPrimary = 8.dp
+    val paddingPrimary = 16.dp
     val tagsModifier = Modifier
         .background(MaterialTheme.colorScheme.tertiary)
         .padding(4.dp)
@@ -116,7 +124,7 @@ fun CocktailItem(cocktail: Cocktail) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(paddingPrimary)
+            .padding(bottom = paddingPrimary)
             .clip(shape = RoundedCornerShape(paddingPrimary))
             .background(MaterialTheme.colorScheme.primary)
             .clickable {
@@ -139,11 +147,11 @@ fun CocktailItem(cocktail: Cocktail) {
         Column {
             Text(
                 text = cocktail.name,
-                modifier = Modifier.padding(paddingPrimary)
+                modifier = Modifier.padding(paddingPrimary / 2)
             )
 
             Row(
-                modifier = Modifier.padding(paddingPrimary)
+                modifier = Modifier.padding(paddingPrimary / 2)
             ) {
                 Text(
                     text = cocktail.category,
@@ -151,7 +159,7 @@ fun CocktailItem(cocktail: Cocktail) {
                     style = MaterialTheme.typography.labelSmall
                 )
 
-                Spacer(modifier = Modifier.size(paddingPrimary))
+                Spacer(modifier = Modifier.size(paddingPrimary / 2))
 
                 Text(
                     text = cocktail.alcoholic,
@@ -164,15 +172,14 @@ fun CocktailItem(cocktail: Cocktail) {
 }
 
 @Composable
-fun RefreshButton(onClick: () -> Unit) {
+fun RefreshButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
     Box(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = modifier.fillMaxSize()
     ) {
         Button(
             onClick = onClick,
             modifier = Modifier
-                .align(Alignment.BottomCenter)
+                .align(if (isTablet()) Alignment.TopEnd else Alignment.BottomCenter)
                 .padding(16.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.secondary
