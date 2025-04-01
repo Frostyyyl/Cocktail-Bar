@@ -1,21 +1,15 @@
 package com.example.cocktail_bar
 
-import android.R.attr.button
-import android.R.attr.onClick
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.AbsoluteRoundedCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -23,24 +17,20 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
-import androidx.window.core.layout.WindowSizeClass
 import androidx.window.core.layout.WindowWidthSizeClass
 import coil.compose.AsyncImage
 import com.example.cocktail_bar.ui.theme.CocktailBarTheme
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 const val cocktailsNum = 10
 
@@ -66,12 +56,16 @@ private fun isTablet(): Boolean {
 @Composable
 fun CocktailApp(viewModel: CocktailViewModel) {
     val cocktails = viewModel.cocktails.value
+    var selectedCocktail by remember { mutableIntStateOf(0) }
+
     CocktailBarTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
             if (isTablet()){
 
                 Row (modifier = Modifier.padding(innerPadding)) {
-                    CocktailList(Modifier.weight(2f), cocktails)
+                    CocktailList(Modifier.weight(2f), cocktails, selectedCocktail) { index: Int ->
+                        selectedCocktail = index
+                    }
                     Box(
                         Modifier
                             .weight(3f)
@@ -79,7 +73,7 @@ fun CocktailApp(viewModel: CocktailViewModel) {
                             .align(Alignment.CenterVertically)
                     ) {
                         if (cocktails.isNotEmpty()) {
-                            CocktailDetails(cocktails[0])
+                            CocktailDetails(cocktails[selectedCocktail])
                         }
                     }
                 }
@@ -89,7 +83,9 @@ fun CocktailApp(viewModel: CocktailViewModel) {
 
             } else {
 
-                CocktailList(Modifier.padding(innerPadding), cocktails)
+                CocktailList(Modifier.padding(innerPadding), cocktails, selectedCocktail) { index ->
+                    selectedCocktail = index
+                }
                 RefreshButton(
                     modifier = Modifier.padding(innerPadding),
                     onClick = { viewModel.fetchRandomCocktails(cocktailsNum) }
@@ -100,26 +96,31 @@ fun CocktailApp(viewModel: CocktailViewModel) {
 }
 
 @Composable
-fun CocktailList(modifier: Modifier = Modifier, cocktails: List<Cocktail>) {
+fun CocktailList(modifier: Modifier = Modifier, cocktails: List<Cocktail>,
+                 selectedCocktail: Int,
+                 onCocktailSelected: (Int) -> Unit) {
     val scrollState = rememberScrollState(initial = 0)
 
     Column(modifier = modifier
         .padding(horizontal = 16.dp)
         .verticalScroll(scrollState)
     ) {
-        for (cocktail in cocktails) {
-            CocktailItem(cocktail)
+        cocktails.forEachIndexed { index, cocktail ->
+            CocktailItem(index, cocktail, selectedCocktail, onCocktailSelected)
         }
     }
 }
 
 @Composable
-fun CocktailItem(cocktail: Cocktail) {
+fun CocktailItem(index: Int, cocktail: Cocktail,
+                 selectedCocktail: Int,
+                 onCocktailSelected: (Int) -> Unit) {
     val context = LocalContext.current
     val paddingPrimary = 16.dp
     val tagsModifier = Modifier
         .background(MaterialTheme.colorScheme.tertiary)
         .padding(4.dp)
+    val isTablet = isTablet()
 
     Row(
         modifier = Modifier
@@ -128,10 +129,15 @@ fun CocktailItem(cocktail: Cocktail) {
             .clip(shape = RoundedCornerShape(paddingPrimary))
             .background(MaterialTheme.colorScheme.primary)
             .clickable {
-                val intent = Intent(context, DetailsActivity::class.java).apply {
-                    putExtra("cocktail", cocktail)
+                if(isTablet) {
+                    onCocktailSelected(index)
                 }
-                context.startActivity(intent)
+                else {
+                    val intent = Intent(context, DetailsActivity::class.java).apply {
+                        putExtra("cocktail", cocktail)
+                    }
+                    context.startActivity(intent)
+                }
             },
         verticalAlignment = Alignment.CenterVertically
     ) {
