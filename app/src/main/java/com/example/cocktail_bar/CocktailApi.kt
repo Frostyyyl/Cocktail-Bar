@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.State
+import androidx.lifecycle.SavedStateHandle
 import kotlinx.parcelize.Parcelize
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -32,9 +33,17 @@ object RetrofitInstance {
     }
 }
 
-class CocktailViewModel : ViewModel() {
+class CocktailViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel() {
     private val _cocktails = mutableStateOf<List<Cocktail>>(emptyList())
     val cocktails: State<List<Cocktail>> = _cocktails
+
+    init {
+        if (!savedStateHandle.contains("cocktails")) {
+            fetchRandomCocktails(cocktailsNum)
+        } else {
+            _cocktails.value = savedStateHandle["cocktails"] ?: emptyList()
+        }
+    }
 
     fun fetchRandomCocktails(num: Int) {
         viewModelScope.launch {
@@ -50,6 +59,7 @@ class CocktailViewModel : ViewModel() {
             }
 
             _cocktails.value = newCocktails
+            savedStateHandle["cocktails"] = newCocktails
         }
     }
 }

@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -32,7 +33,7 @@ import androidx.window.core.layout.WindowWidthSizeClass
 import coil.compose.AsyncImage
 import com.example.cocktail_bar.ui.theme.CocktailBarTheme
 
-const val cocktailsNum = 10
+const val cocktailsNum = 12
 
 class MainActivity : ComponentActivity() {
     private val viewModel: CocktailViewModel by viewModels()
@@ -40,7 +41,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        viewModel.fetchRandomCocktails(cocktailsNum)
         setContent {
             CocktailApp(viewModel)
         }
@@ -57,38 +57,47 @@ private fun isTablet(): Boolean {
 fun CocktailApp(viewModel: CocktailViewModel) {
     val cocktails = viewModel.cocktails.value
     var selectedCocktail by remember { mutableIntStateOf(0) }
+    val scrollState = rememberScrollState(initial = 0)
+
+    LaunchedEffect(cocktails) {
+        if (cocktails.isNotEmpty()) {
+            selectedCocktail = 0 // After refreshing the cocktails set index to 0
+        }
+    }
 
     CocktailBarTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
             if (isTablet()){
 
                 Row (modifier = Modifier.padding(innerPadding)) {
-                    CocktailList(Modifier.weight(2f), cocktails, selectedCocktail) { index: Int ->
+                    CocktailList(Modifier.weight(2f), cocktails) { index: Int ->
                         selectedCocktail = index
                     }
-                    Box(
+                    Box (
                         Modifier
                             .weight(3f)
                             .padding(end = 16.dp)
                             .align(Alignment.CenterVertically)
+                            .verticalScroll(scrollState)
+
                     ) {
                         if (cocktails.isNotEmpty()) {
                             CocktailDetails(cocktails[selectedCocktail])
                         }
+                        RefreshButton(onClick = {
+                            viewModel.fetchRandomCocktails(cocktailsNum)
+                        })
                     }
                 }
-                RefreshButton(onClick = {
-                    viewModel.fetchRandomCocktails(cocktailsNum)
-                })
 
             } else {
 
-                CocktailList(Modifier.padding(innerPadding), cocktails, selectedCocktail) { index ->
+                CocktailList(Modifier.padding(innerPadding), cocktails) { index ->
                     selectedCocktail = index
                 }
                 RefreshButton(
                     modifier = Modifier.padding(innerPadding),
-                    onClick = { viewModel.fetchRandomCocktails(cocktailsNum) }
+                    onClick = { viewModel.fetchRandomCocktails(cocktailsNum)}
                 )
             }
         }
@@ -97,7 +106,6 @@ fun CocktailApp(viewModel: CocktailViewModel) {
 
 @Composable
 fun CocktailList(modifier: Modifier = Modifier, cocktails: List<Cocktail>,
-                 selectedCocktail: Int,
                  onCocktailSelected: (Int) -> Unit) {
     val scrollState = rememberScrollState(initial = 0)
 
@@ -106,15 +114,13 @@ fun CocktailList(modifier: Modifier = Modifier, cocktails: List<Cocktail>,
         .verticalScroll(scrollState)
     ) {
         cocktails.forEachIndexed { index, cocktail ->
-            CocktailItem(index, cocktail, selectedCocktail, onCocktailSelected)
+            CocktailItem(index, cocktail, onCocktailSelected)
         }
     }
 }
 
 @Composable
-fun CocktailItem(index: Int, cocktail: Cocktail,
-                 selectedCocktail: Int,
-                 onCocktailSelected: (Int) -> Unit) {
+fun CocktailItem(index: Int, cocktail: Cocktail, onCocktailSelected: (Int) -> Unit) {
     val context = LocalContext.current
     val paddingPrimary = 16.dp
     val tagsModifier = Modifier

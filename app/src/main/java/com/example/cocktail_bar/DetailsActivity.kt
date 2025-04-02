@@ -93,6 +93,7 @@ class DetailsActivity : ComponentActivity() {
         }
     }
 }
+
 @Composable
 fun CocktailDetails(cocktail: Cocktail) {
     Column(
