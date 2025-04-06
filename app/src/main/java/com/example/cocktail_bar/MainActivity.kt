@@ -1,6 +1,7 @@
 package com.example.cocktail_bar
 
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -8,7 +9,10 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -28,12 +32,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowWidthSizeClass
 import coil.compose.AsyncImage
 import com.example.cocktail_bar.ui.theme.CocktailBarTheme
 
-const val cocktailsNum = 12
+const val cocktailsNum = 16
 
 class MainActivity : ComponentActivity() {
     private val viewModel: CocktailViewModel by viewModels()
@@ -49,8 +54,9 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 private fun isTablet(): Boolean {
-    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-    return windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.EXPANDED
+    val context = LocalContext.current
+    return context.resources.configuration.screenLayout and
+            Configuration.SCREENLAYOUT_SIZE_MASK >= Configuration.SCREENLAYOUT_SIZE_LARGE
 }
 
 @Composable
@@ -70,19 +76,23 @@ fun CocktailApp(viewModel: CocktailViewModel) {
             if (isTablet()){
 
                 Row (modifier = Modifier.padding(innerPadding)) {
-                    CocktailList(Modifier.weight(2f), cocktails) { index: Int ->
+                    CocktailList(Modifier.weight(3f), cocktails) { index: Int ->
                         selectedCocktail = index
                     }
                     Box (
                         Modifier
-                            .weight(3f)
+                            .weight(4f)
                             .padding(end = 16.dp)
                             .align(Alignment.CenterVertically)
                             .verticalScroll(scrollState)
 
                     ) {
                         if (cocktails.isNotEmpty()) {
-                            CocktailDetails(cocktails[selectedCocktail])
+                            Column {
+                                CocktailDetails(cocktails[selectedCocktail])
+                                Spacer(modifier = Modifier.size(24.dp))
+                                Timer(key = selectedCocktail, minutes = 1, seconds = 0)
+                            }
                         }
                         RefreshButton(onClick = {
                             viewModel.fetchRandomCocktails(cocktailsNum)
@@ -107,13 +117,10 @@ fun CocktailApp(viewModel: CocktailViewModel) {
 @Composable
 fun CocktailList(modifier: Modifier = Modifier, cocktails: List<Cocktail>,
                  onCocktailSelected: (Int) -> Unit) {
-    val scrollState = rememberScrollState(initial = 0)
-
-    Column(modifier = modifier
+    LazyColumn(modifier = modifier
         .padding(horizontal = 16.dp)
-        .verticalScroll(scrollState)
     ) {
-        cocktails.forEachIndexed { index, cocktail ->
+        itemsIndexed(cocktails) { index, cocktail ->
             CocktailItem(index, cocktail, onCocktailSelected)
         }
     }
@@ -124,7 +131,7 @@ fun CocktailItem(index: Int, cocktail: Cocktail, onCocktailSelected: (Int) -> Un
     val context = LocalContext.current
     val paddingPrimary = 16.dp
     val tagsModifier = Modifier
-        .background(MaterialTheme.colorScheme.tertiary)
+        .background(MaterialTheme.colorScheme.secondary)
         .padding(4.dp)
     val isTablet = isTablet()
 
@@ -159,7 +166,8 @@ fun CocktailItem(index: Int, cocktail: Cocktail, onCocktailSelected: (Int) -> Un
         Column {
             Text(
                 text = cocktail.name,
-                modifier = Modifier.padding(paddingPrimary / 2)
+                modifier = Modifier.padding(paddingPrimary / 2),
+                fontWeight = FontWeight.Bold
             )
 
             Row(
@@ -199,7 +207,7 @@ fun RefreshButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
         ) {
             Icon(
                 imageVector = Icons.Default.Refresh,
-                contentDescription = null,
+                contentDescription = "Refresh",
                 tint = Color.Black
             )
         }
