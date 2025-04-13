@@ -1,20 +1,16 @@
 package com.example.cocktail_bar
 
-import android.R.attr.data
 import android.os.Parcelable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import androidx.compose.runtime.State
-import androidx.lifecycle.SavedStateHandle
 import kotlinx.parcelize.Parcelize
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
-import retrofit2.http.Query
-import kotlin.collections.firstOrNull
-import kotlin.jvm.java
 
 interface CocktailApi {
     @GET("random.php")
