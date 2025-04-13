@@ -1,14 +1,11 @@
 package com.example.cocktail_bar.ui.theme
 
-import android.R.attr.fontFamily
-import android.R.attr.text
 import androidx.compose.material3.Typography
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import java.lang.ProcessBuilder.Redirect.to
 
 // Set of Material typography styles to start with
 val Typography = Typography(
