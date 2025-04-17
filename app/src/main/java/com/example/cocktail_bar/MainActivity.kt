@@ -15,10 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -31,13 +28,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.cocktail_bar.api.CocktailViewModel
-import com.example.cocktail_bar.components.layout.AppBar
 import com.example.cocktail_bar.components.CocktailDetails
 import com.example.cocktail_bar.components.CocktailList
 import com.example.cocktail_bar.components.RefreshButton
 import com.example.cocktail_bar.components.SendSMSButton
 import com.example.cocktail_bar.components.Timer
-import com.example.cocktail_bar.ui.theme.CocktailBarTheme
 
 const val cocktailsNum = 16
 

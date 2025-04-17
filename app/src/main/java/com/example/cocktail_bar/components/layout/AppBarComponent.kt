@@ -1,8 +1,7 @@
 package com.example.cocktail_bar.components.layout
 
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -20,7 +19,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun AppBar(
     title: String = "Cocktail Bar",
-    onBackClick: (() -> Unit)
+    onListClick: (() -> Unit)
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState());
 
@@ -32,8 +31,8 @@ fun AppBar(
             )
         },
         navigationIcon = {
-            IconButton(onClick = onBackClick) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+            IconButton(onClick = onListClick) {
+                Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Navigation Drawer")
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(

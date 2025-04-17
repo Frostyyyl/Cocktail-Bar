@@ -12,8 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -22,26 +20,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.cocktail_bar.api.Cocktail
 import com.example.cocktail_bar.components.CocktailDetails
-import com.example.cocktail_bar.components.layout.ReturnButton
 import com.example.cocktail_bar.components.SendSMSButton
 import com.example.cocktail_bar.components.Timer
-import com.example.cocktail_bar.ui.theme.CocktailBarTheme
+import com.example.cocktail_bar.components.layout.ReturnButton
 
 class DetailsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            CocktailBarTheme {
-                val scope = rememberCoroutineScope()
-                val snackbarHostState = remember { SnackbarHostState() }
+            val snackbarHostState = remember { SnackbarHostState() }
+            val scope = rememberCoroutineScope()
 
-                Scaffold(
-                    modifier = Modifier.fillMaxSize(),
-                    snackbarHost = {
-                        SnackbarHost(hostState = snackbarHostState)
-                    }
-                ) { innerPadding ->
+            CocktailActivityTemplate (
+                snackbarHostState = snackbarHostState,
+                scope = scope,
+                mainContent = { innerPadding ->
                     val cocktail: Cocktail = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                         intent.getParcelableExtra("cocktail", Cocktail::class.java)
                     } else {
@@ -90,7 +84,7 @@ class DetailsActivity : ComponentActivity() {
                         )
                     }
                 }
-            }
+            )
         }
     }
 }
