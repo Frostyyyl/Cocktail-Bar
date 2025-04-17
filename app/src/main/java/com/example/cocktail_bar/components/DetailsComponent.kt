@@ -1,4 +1,4 @@
-package com.example.cocktail_bar
+package com.example.cocktail_bar.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -24,6 +24,8 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.cocktail_bar.api.Cocktail
+import com.example.cocktail_bar.R
 
 @Composable
 fun CocktailDetails(cocktail: Cocktail) {

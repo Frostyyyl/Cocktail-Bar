@@ -1,4 +1,4 @@
-package com.example.cocktail_bar
+package com.example.cocktail_bar.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

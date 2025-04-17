@@ -20,6 +20,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.cocktail_bar.api.Cocktail
+import com.example.cocktail_bar.components.CocktailDetails
+import com.example.cocktail_bar.components.layout.ReturnButton
+import com.example.cocktail_bar.components.SendSMSButton
+import com.example.cocktail_bar.components.Timer
 import com.example.cocktail_bar.ui.theme.CocktailBarTheme
 
 class DetailsActivity : ComponentActivity() {

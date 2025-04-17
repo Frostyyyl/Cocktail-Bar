@@ -18,6 +18,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -29,6 +30,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.example.cocktail_bar.api.CocktailViewModel
+import com.example.cocktail_bar.components.layout.AppBar
+import com.example.cocktail_bar.components.CocktailDetails
+import com.example.cocktail_bar.components.CocktailList
+import com.example.cocktail_bar.components.RefreshButton
+import com.example.cocktail_bar.components.SendSMSButton
+import com.example.cocktail_bar.components.Timer
 import com.example.cocktail_bar.ui.theme.CocktailBarTheme
 
 const val cocktailsNum = 16
@@ -64,16 +72,13 @@ fun CocktailApp(viewModel: CocktailViewModel) {
         }
     }
 
-    CocktailBarTheme {
-        val scope = rememberCoroutineScope()
-        val snackbarHostState = remember { SnackbarHostState() }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
-        Scaffold(
-            modifier = Modifier.fillMaxSize(),
-            snackbarHost = {
-                SnackbarHost(hostState = snackbarHostState)
-            }
-        ) { innerPadding ->
+    CocktailActivityTemplate (
+        snackbarHostState = snackbarHostState,
+        scope = scope,
+        mainContent = { innerPadding ->
             if (isTablet()){
 
                 Row (modifier = Modifier.padding(innerPadding)) {
@@ -123,9 +128,9 @@ fun CocktailApp(viewModel: CocktailViewModel) {
                 }
                 RefreshButton(
                     modifier = Modifier.padding(innerPadding),
-                    onClick = { viewModel.fetchRandomCocktails(cocktailsNum)}
+                    onClick = { viewModel.fetchRandomCocktails(cocktailsNum) }
                 )
             }
         }
-    }
+    )
 }

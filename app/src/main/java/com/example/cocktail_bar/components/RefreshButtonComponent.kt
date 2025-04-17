@@ -1,4 +1,4 @@
-package com.example.cocktail_bar
+package com.example.cocktail_bar.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.cocktail_bar.isTablet
 
 @Composable
 fun RefreshButton(modifier: Modifier = Modifier, onClick: () -> Unit) {

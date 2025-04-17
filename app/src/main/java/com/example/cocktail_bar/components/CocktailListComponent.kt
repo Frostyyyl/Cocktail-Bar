@@ -1,4 +1,4 @@
-package com.example.cocktail_bar
+package com.example.cocktail_bar.components
 
 import android.content.Intent
 import androidx.compose.foundation.background
@@ -25,6 +25,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.example.cocktail_bar.api.Cocktail
+import com.example.cocktail_bar.DetailsActivity
+import com.example.cocktail_bar.R
+import com.example.cocktail_bar.isTablet
 
 
 @Composable

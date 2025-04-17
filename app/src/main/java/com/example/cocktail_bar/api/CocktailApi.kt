@@ -1,4 +1,4 @@
-package com.example.cocktail_bar
+package com.example.cocktail_bar.api
 
 import android.os.Parcelable
 import androidx.compose.runtime.State
@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.cocktail_bar.cocktailsNum
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import retrofit2.Retrofit

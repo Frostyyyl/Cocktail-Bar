@@ -1,4 +1,4 @@
-package com.example.cocktail_bar
+package com.example.cocktail_bar.components.layout
 
 import android.app.Activity
 import androidx.compose.material.icons.Icons

@@ -1,4 +1,4 @@
-package com.example.cocktail_bar
+package com.example.cocktail_bar.components
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
@@ -10,6 +10,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import com.example.cocktail_bar.api.Cocktail
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
