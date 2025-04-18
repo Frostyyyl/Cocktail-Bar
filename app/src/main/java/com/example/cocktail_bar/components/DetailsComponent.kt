@@ -1,5 +1,6 @@
 package com.example.cocktail_bar.components
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -112,7 +113,7 @@ fun CocktailIngredients(ingredients: List<String>, measurements: List<String>, s
                 append("Ingredients: \n")
             }
             for (i in measurements.indices) {
-                append("■ ${measurements[i]} of ${ingredients[i]}\n")
+                append("■ ${measurements[i]}of ${ingredients[i]}\n")
             }
         }
     )
