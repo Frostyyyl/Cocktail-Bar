@@ -14,7 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.cocktail_bar.isTablet
+import com.example.cocktail_bar.utility.isTablet
 
 @Composable
 fun RefreshButton(modifier: Modifier = Modifier, onClick: () -> Unit) {

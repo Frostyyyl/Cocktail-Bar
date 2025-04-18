@@ -28,7 +28,7 @@ import coil.compose.AsyncImage
 import com.example.cocktail_bar.api.Cocktail
 import com.example.cocktail_bar.DetailsActivity
 import com.example.cocktail_bar.R
-import com.example.cocktail_bar.isTablet
+import com.example.cocktail_bar.utility.isTablet
 
 
 @Composable

@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.SnackbarHostState
@@ -33,6 +35,10 @@ import com.example.cocktail_bar.components.CocktailList
 import com.example.cocktail_bar.components.RefreshButton
 import com.example.cocktail_bar.components.SendSMSButton
 import com.example.cocktail_bar.components.Timer
+import com.example.cocktail_bar.components.cards.AlcoholicCategoryCard
+import com.example.cocktail_bar.components.cards.HomeCard
+import com.example.cocktail_bar.components.cards.NonAlcoholicCategoryCard
+import com.example.cocktail_bar.utility.isTablet
 
 const val cocktailsNum = 16
 
@@ -43,89 +49,41 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            CocktailApp(viewModel)
-        }
-    }
-}
+            //CocktailApp(viewModel)
 
-@Composable
-fun isTablet(): Boolean {
-    val context = LocalContext.current
-    return context.resources.configuration.screenLayout and
-            Configuration.SCREENLAYOUT_SIZE_MASK >= Configuration.SCREENLAYOUT_SIZE_LARGE
-}
+            val snackbarHostState = remember { SnackbarHostState() }
+            val scope = rememberCoroutineScope()
+            val pagerState = rememberPagerState(pageCount = {
+                3
+            })
 
-@Composable
-fun CocktailApp(viewModel: CocktailViewModel) {
-    val cocktails = viewModel.cocktails.value
-    var selectedCocktail by remember { mutableIntStateOf(0) }
-    val scrollState = rememberScrollState(initial = 0)
-
-    LaunchedEffect(cocktails) {
-        if (cocktails.isNotEmpty()) {
-            selectedCocktail = 0 // After refreshing the cocktails set index to 0
-        }
-    }
-
-    val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
-
-    CocktailActivityTemplate (
-        snackbarHostState = snackbarHostState,
-        scope = scope,
-        mainContent = { innerPadding ->
-            if (isTablet()){
-
-                Row (modifier = Modifier.padding(innerPadding)) {
-                    CocktailList(Modifier.weight(3f), cocktails) { index: Int ->
-                        selectedCocktail = index
-                    }
-                    Box (
-                        Modifier
-                            .weight(4f)
-                            .padding(end = 16.dp)
-                            .align(Alignment.CenterVertically)
-                            .verticalScroll(scrollState)
-                    ) {
-                        if (cocktails.isNotEmpty()) {
-                            Column {
-                                CocktailDetails(cocktails[selectedCocktail])
-                                Spacer(modifier = Modifier.size(24.dp))
-                                Timer(key = selectedCocktail, minutes = 1, seconds = 0)
-                            }
-
-                        }
-                        RefreshButton(onClick = {
-                            viewModel.fetchRandomCocktails(cocktailsNum)
-                        })
-                    }
-                }
-
-                if (cocktails.isNotEmpty()){
-                    Box(
+            CocktailActivityTemplate (
+                snackbarHostState = snackbarHostState,
+                scope = scope,
+                pagerState = pagerState,
+                mainContent = { innerPadding ->
+                    HorizontalPager(
+                        state = pagerState,
                         modifier = Modifier
                             .fillMaxSize()
-                    ) {
-                        SendSMSButton(
-                            cocktail = cocktails[selectedCocktail],
-                            modifier = Modifier
-                                .align(Alignment.BottomEnd)
-                                .padding(16.dp),
-                            snackbarHostState = snackbarHostState,
-                            scope = scope
-                        )
+                            .padding(innerPadding)
+                    ) { page ->
+                        when(page) {
+                            0 -> HomeCard()
+                            1 -> AlcoholicCategoryCard(
+                                viewModel = viewModel,
+                                snackbarHostState = snackbarHostState,
+                                scope = scope
+                            )
+                            2 -> NonAlcoholicCategoryCard(
+                                viewModel = viewModel,
+                                snackbarHostState = snackbarHostState,
+                                scope = scope
+                            )
+                        }
                     }
                 }
-            } else {
-
-                CocktailList(Modifier.padding(innerPadding), cocktails) { index ->
-                    selectedCocktail = index
-                }
-                RefreshButton(
-                    modifier = Modifier.padding(innerPadding),
-                    onClick = { viewModel.fetchRandomCocktails(cocktailsNum) }
-                )
-            }
+            )
         }
-    )
+    }
 }

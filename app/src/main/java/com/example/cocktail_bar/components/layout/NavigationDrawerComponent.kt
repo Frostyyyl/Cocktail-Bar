@@ -2,9 +2,9 @@ package com.example.cocktail_bar.components.layout
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -17,9 +17,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun NavigationDrawer(
+    pagerState: PagerState,
+    scope: CoroutineScope,
     onBackClick: () -> Unit
 ) {
     ModalDrawerSheet (
@@ -43,11 +47,62 @@ fun NavigationDrawer(
                 modifier = Modifier.padding(16.dp)
             )
         }
-        HorizontalDivider()
+        HorizontalDivider(
+            color = MaterialTheme.colorScheme.onPrimary
+        )
         NavigationDrawerItem(
-            label = { Text(text = "Main page") },
+            label = { Text(
+                text = "Main page",
+                style = MaterialTheme.typography.titleMedium,
+                color = Color.Black
+            ) },
             selected = false,
-            onClick = { /*TODO*/ }
+            onClick = {
+                scope.launch {
+                    pagerState.animateScrollToPage(0)
+                    onBackClick()
+                }
+            }
+        )
+        NavigationDrawerItem(
+            label = { Text(
+                text = "Alcoholic cocktails",
+                style = MaterialTheme.typography.titleMedium,
+                color = Color.Black
+            ) },
+            selected = false,
+            onClick = {
+                scope.launch {
+                    pagerState.animateScrollToPage(1)
+                    onBackClick()
+                }
+            }
+        )
+        NavigationDrawerItem(
+            label = { Text(
+                text = "Non-Alcoholic cocktails",
+                style = MaterialTheme.typography.titleMedium,
+                color = Color.Black
+            ) },
+            selected = false,
+            onClick = {
+                scope.launch {
+                    pagerState.animateScrollToPage(2)
+                    onBackClick()
+                }
+            }
+        )
+        HorizontalDivider(
+            color = MaterialTheme.colorScheme.onPrimary
+        )
+        NavigationDrawerItem(
+            label = { Text(
+                text = "Timer",
+                style = MaterialTheme.typography.titleMedium,
+                color = Color.Black
+            ) },
+            selected = false,
+            onClick = { /* TODO */ }
         )
     }
 }
