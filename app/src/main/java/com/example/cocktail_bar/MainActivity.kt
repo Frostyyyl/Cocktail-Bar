@@ -49,8 +49,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            //CocktailApp(viewModel)
-
             val snackbarHostState = remember { SnackbarHostState() }
             val scope = rememberCoroutineScope()
             val pagerState = rememberPagerState(pageCount = {
@@ -66,7 +64,7 @@ class MainActivity : ComponentActivity() {
                         state = pagerState,
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(innerPadding)
+                            .padding(innerPadding) // is this useful for anything?
                     ) { page ->
                         when(page) {
                             0 -> HomeCard()

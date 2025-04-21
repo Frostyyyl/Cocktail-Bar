@@ -37,7 +37,7 @@ fun AlcoholicCategoryCard(
     modifier: Modifier = Modifier,
     scope: CoroutineScope = rememberCoroutineScope(),
 ) {
-    val cocktails = viewModel.cocktails.value
+    val cocktails = viewModel.cocktails.value.filter {it.alcoholic == "Alcoholic"}
     var selectedCocktail by remember { mutableIntStateOf(0) }
     val scrollState = rememberScrollState(initial = 0)
 
@@ -48,7 +48,6 @@ fun AlcoholicCategoryCard(
     }
 
     if (isTablet()){
-
         Row () {
             CocktailList(Modifier.weight(3f), cocktails) { index: Int ->
                 selectedCocktail = index
