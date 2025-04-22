@@ -28,14 +28,15 @@ import coil.compose.AsyncImage
 import com.example.cocktail_bar.api.Cocktail
 import com.example.cocktail_bar.DetailsActivity
 import com.example.cocktail_bar.R
+import com.example.cocktail_bar.api.CocktailShort
 import com.example.cocktail_bar.utility.isTablet
 
 
 @Composable
-fun CocktailList(modifier: Modifier = Modifier, cocktails: List<Cocktail>,
+fun CocktailList(modifier: Modifier = Modifier, cocktails: List<CocktailShort>,
                  onCocktailSelected: (Int) -> Unit) {
     LazyColumn(modifier = modifier
-        .padding(horizontal = 16.dp)
+        .padding(16.dp)
     ) {
         itemsIndexed(cocktails) { index, cocktail ->
             CocktailItem(index, cocktail, onCocktailSelected)
@@ -43,13 +44,11 @@ fun CocktailList(modifier: Modifier = Modifier, cocktails: List<Cocktail>,
     }
 }
 
+
 @Composable
-fun CocktailItem(index: Int, cocktail: Cocktail, onCocktailSelected: (Int) -> Unit) {
+fun CocktailItem(index: Int, cocktail: CocktailShort, onCocktailSelected: (Int) -> Unit) {
     val context = LocalContext.current
     val paddingPrimary = 16.dp
-    val tagsModifier = Modifier
-        .background(MaterialTheme.colorScheme.secondary)
-        .padding(4.dp)
     val isTablet = isTablet()
 
     Row(
@@ -64,7 +63,7 @@ fun CocktailItem(index: Int, cocktail: Cocktail, onCocktailSelected: (Int) -> Un
                 }
                 else {
                     val intent = Intent(context, DetailsActivity::class.java).apply {
-                        putExtra("cocktail", cocktail)
+                        putExtra("id", cocktail.idDrink) // Pass only the ID
                     }
                     context.startActivity(intent)
                 }
@@ -72,7 +71,7 @@ fun CocktailItem(index: Int, cocktail: Cocktail, onCocktailSelected: (Int) -> Un
         verticalAlignment = Alignment.CenterVertically
     ) {
         AsyncImage(
-            model = cocktail.imageLink,
+            model = cocktail.strDrinkThumb,
             modifier = Modifier
                 .width(100.dp)
                 .height(100.dp),
@@ -82,28 +81,10 @@ fun CocktailItem(index: Int, cocktail: Cocktail, onCocktailSelected: (Int) -> Un
 
         Column {
             Text(
-                text = cocktail.name,
+                text = cocktail.strDrink,
                 modifier = Modifier.padding(paddingPrimary / 2),
                 fontWeight = FontWeight.Bold
             )
-
-            Row(
-                modifier = Modifier.padding(paddingPrimary / 2)
-            ) {
-                Text(
-                    text = cocktail.category,
-                    modifier = tagsModifier,
-                    style = MaterialTheme.typography.labelSmall
-                )
-
-                Spacer(modifier = Modifier.size(paddingPrimary / 2))
-
-                Text(
-                    text = cocktail.alcoholic,
-                    modifier = tagsModifier,
-                    style = MaterialTheme.typography.labelSmall
-                )
-            }
         }
     }
 }

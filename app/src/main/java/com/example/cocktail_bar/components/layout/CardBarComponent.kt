@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.shape.AbsoluteRoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.BottomAppBar
@@ -36,12 +37,12 @@ fun CardBar(
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth().padding(horizontal = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             val tileModifier = Modifier
                 .weight(1f)
-                .fillMaxHeight()
+                .fillMaxHeight().padding(top = 8.dp)
             val tileButtonDefaults = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = Color.White
@@ -50,7 +51,7 @@ fun CardBar(
             Button(
                 onClick = { scope.launch { pagerState.animateScrollToPage(0) } },
                 modifier = tileModifier,
-                shape = RectangleShape,
+                shape = AbsoluteRoundedCornerShape(16.dp),
                 colors = tileButtonDefaults,
                 contentPadding = PaddingValues(0.dp)
             ) {
@@ -60,7 +61,7 @@ fun CardBar(
             Button(
                 onClick = { scope.launch { pagerState.animateScrollToPage(1) } },
                 modifier = tileModifier,
-                shape = RectangleShape,
+                shape = AbsoluteRoundedCornerShape(16.dp),
                 colors = tileButtonDefaults,
                 contentPadding = PaddingValues(0.dp)
             ) {
@@ -70,7 +71,7 @@ fun CardBar(
             Button(
                 onClick = { scope.launch { pagerState.animateScrollToPage(2) } },
                 modifier = tileModifier,
-                shape = RectangleShape,
+                shape = AbsoluteRoundedCornerShape(16.dp),
                 colors = tileButtonDefaults,
                 contentPadding = PaddingValues(0.dp)
             ) {

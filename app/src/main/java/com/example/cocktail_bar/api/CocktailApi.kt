@@ -1,21 +1,31 @@
 package com.example.cocktail_bar.api
 
+import android.R.attr.data
 import android.os.Parcelable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.cocktail_bar.cocktailsNum
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
+import retrofit2.http.Query
 
 interface CocktailApi {
     @GET("random.php")
     suspend fun getRandomCocktail(): CocktailsDataList
+
+    @GET("filter.php?a=Alcoholic")
+    suspend fun getAlcoholicCocktailList(): CocktailsShortDataList
+
+    @GET("filter.php?a=Non_Alcoholic")
+    suspend fun getNonAlcoholicCocktailList(): CocktailsShortDataList
+
+    @GET("lookup.php")
+    suspend fun getCocktailById(@Query("i") id: String): CocktailsDataList
 }
 
 object RetrofitInstance {
@@ -31,15 +41,20 @@ object RetrofitInstance {
 }
 
 class CocktailViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel() {
-    private val _cocktails = mutableStateOf<List<Cocktail>>(emptyList())
-    val cocktails: State<List<Cocktail>> = _cocktails
+    private val _randomCocktails = mutableStateOf<List<Cocktail>>(emptyList())
+    val randomCocktails: State<List<Cocktail>> = _randomCocktails
+
+    private val _isAlcoholicLoading = mutableStateOf(false)
+    val isAlcoholicLoading: State<Boolean> = _isAlcoholicLoading
+    private val _isNonAlcoholicLoading = mutableStateOf(false)
+    val isNonAlcoholicLoading: State<Boolean> = _isNonAlcoholicLoading
+
+    var alcoholicCocktails: List<CocktailShort> = emptyList()
+    var nonAlcoholicCocktails: List<CocktailShort> = emptyList()
 
     init {
-        if (!savedStateHandle.contains("cocktails")) {
-            fetchRandomCocktails(cocktailsNum)
-        } else {
-            _cocktails.value = savedStateHandle["cocktails"] ?: emptyList()
-        }
+        fetchAlcoholicCocktails()
+        fetchNonAlcoholicCocktails()
     }
 
     fun fetchRandomCocktails(num: Int) {
@@ -55,8 +70,47 @@ class CocktailViewModel(private val savedStateHandle: SavedStateHandle) : ViewMo
                 }
             }
 
-            _cocktails.value = newCocktails
+            _randomCocktails.value = newCocktails
             savedStateHandle["cocktails"] = newCocktails
+        }
+    }
+
+    fun fetchAlcoholicCocktails() {
+        viewModelScope.launch {
+            _isAlcoholicLoading.value = true
+            try {
+                alcoholicCocktails = RetrofitInstance.api.getAlcoholicCocktailList().drinks
+            } catch (e: Exception) {
+                println("Error fetching alcoholic cocktails: ${e.message}")
+            } finally {
+                _isAlcoholicLoading.value = false
+            }
+        }
+    }
+
+    fun fetchNonAlcoholicCocktails() {
+        viewModelScope.launch {
+            _isNonAlcoholicLoading.value = true
+            try {
+                nonAlcoholicCocktails = RetrofitInstance.api.getNonAlcoholicCocktailList().drinks
+            } catch (e: Exception) {
+                println("Error fetching non-alcoholic cocktails: ${e.message}")
+            } finally {
+                _isNonAlcoholicLoading.value = false
+            }
+        }
+    }
+
+    fun fetchCocktailDetails(id: String, onSuccess: (Cocktail) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val response = RetrofitInstance.api.getCocktailById(id)
+                if (response.drinks.isNotEmpty()) {
+                    onSuccess(response.drinks[0].toCocktail())
+                }
+            } catch (e: Exception) {
+                println("Error fetching cocktail details: ${e.message}")
+            }
         }
     }
 }
@@ -64,6 +118,17 @@ class CocktailViewModel(private val savedStateHandle: SavedStateHandle) : ViewMo
 data class CocktailsDataList(
     val drinks: List<CocktailData>
 )
+
+data class CocktailsShortDataList(
+    val drinks: List<CocktailShort>
+)
+
+@Parcelize
+data class CocktailShort(
+    val idDrink: String,
+    val strDrink: String,
+    val strDrinkThumb: String,
+) : Parcelable
 
 @Parcelize
 data class Cocktail(

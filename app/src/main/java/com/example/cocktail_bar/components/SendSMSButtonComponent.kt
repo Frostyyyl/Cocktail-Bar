@@ -11,21 +11,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.example.cocktail_bar.api.Cocktail
+import com.example.cocktail_bar.api.CocktailShort
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
 fun SendSMSButton(
-    cocktail: Cocktail,
+    cocktailName: String,
     modifier: Modifier = Modifier,
-    snackbarHostState: SnackbarHostState,
+    snackBarHostState: SnackbarHostState,
     scope: CoroutineScope
 ) {
     FloatingActionButton(
         onClick = {
-            println(cocktail.name)
+            println(cocktailName)
             scope.launch {
-                snackbarHostState.showSnackbar("Sending SMS about ${cocktail.name}")
+                snackBarHostState.showSnackbar("Sending SMS about ${cocktailName}")
             }
         },
         modifier = modifier,
