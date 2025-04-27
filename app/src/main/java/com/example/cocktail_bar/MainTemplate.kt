@@ -22,11 +22,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
-fun ActivityTemplate (
+fun MainTemplate(
     title: String = "Cocktail Bar",
     snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
     scope: CoroutineScope = rememberCoroutineScope(),
     pagerState: PagerState = rememberPagerState(pageCount = { 3 }),
+    onNavigationItemSelected: (Int) -> Unit = {},
     mainContent: @Composable (PaddingValues) -> Unit
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -42,11 +43,11 @@ fun ActivityTemplate (
                         scope.launch {
                             drawerState.apply { close() }
                         }
-                    }
+                    },
+                    onNavigationItemSelected = onNavigationItemSelected
                 )
             },
             gesturesEnabled = true,
-
         ) {
             Scaffold(
                 topBar = {

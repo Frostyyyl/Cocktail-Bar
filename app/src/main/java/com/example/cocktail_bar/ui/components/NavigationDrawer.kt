@@ -24,11 +24,12 @@ import kotlinx.coroutines.launch
 fun NavigationDrawer(
     pagerState: PagerState,
     scope: CoroutineScope,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onNavigationItemSelected: (Int) -> Unit = {}
 ) {
-    ModalDrawerSheet (
+    ModalDrawerSheet(
         drawerContainerColor = MaterialTheme.colorScheme.primary
-    ){
+    ) {
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -51,44 +52,50 @@ fun NavigationDrawer(
             color = MaterialTheme.colorScheme.onPrimary
         )
         NavigationDrawerItem(
-            label = { Text(
-                text = "Home",
-                style = MaterialTheme.typography.titleMedium,
-                color = Color.Black
-            ) },
+            label = {
+                Text(
+                    text = "Home",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color.Black
+                )
+            },
             selected = false,
             onClick = {
                 scope.launch {
-                    pagerState.animateScrollToPage(0)
                     onBackClick()
+                    onNavigationItemSelected(0)
                 }
             }
         )
         NavigationDrawerItem(
-            label = { Text(
-                text = "Alcoholic cocktails",
-                style = MaterialTheme.typography.titleMedium,
-                color = Color.Black
-            ) },
+            label = {
+                Text(
+                    text = "Alcoholic cocktails",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color.Black
+                )
+            },
             selected = false,
             onClick = {
                 scope.launch {
-                    pagerState.animateScrollToPage(1)
                     onBackClick()
+                    onNavigationItemSelected(1)
                 }
             }
         )
         NavigationDrawerItem(
-            label = { Text(
-                text = "Non-Alcoholic cocktails",
-                style = MaterialTheme.typography.titleMedium,
-                color = Color.Black
-            ) },
+            label = {
+                Text(
+                    text = "Non-Alcoholic cocktails",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color.Black
+                )
+            },
             selected = false,
             onClick = {
                 scope.launch {
-                    pagerState.animateScrollToPage(2)
                     onBackClick()
+                    onNavigationItemSelected(2)
                 }
             }
         )
@@ -96,13 +103,17 @@ fun NavigationDrawer(
             color = MaterialTheme.colorScheme.onPrimary
         )
         NavigationDrawerItem(
-            label = { Text(
-                text = "Timer",
-                style = MaterialTheme.typography.titleMedium,
-                color = Color.Black
-            ) },
+            label = {
+                Text(
+                    text = "Timer",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color.Black
+                )
+            },
             selected = false,
-            onClick = { /* TODO */ }
+            onClick = {
+                // Handle Timer case if needed
+            }
         )
     }
 }

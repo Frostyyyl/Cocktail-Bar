@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -17,6 +18,7 @@ import com.example.cocktail_bar.data.service.CocktailViewModel
 import com.example.cocktail_bar.ui.screens.alcoholic.AlcoholicScreen
 import com.example.cocktail_bar.ui.screens.home.HomeScreen
 import com.example.cocktail_bar.ui.screens.nonalcoholic.NonAlcoholicScreen
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     private val viewModel: CocktailViewModel by viewModels()
@@ -27,14 +29,25 @@ class MainActivity : ComponentActivity() {
         setContent {
             val snackBarHostState = remember { SnackbarHostState() }
             val scope = rememberCoroutineScope()
-            val pagerState = rememberPagerState(pageCount = {
-                3
-            })
+            val pagerState = rememberPagerState(pageCount = { 3 })
 
-            ActivityTemplate (
+            // Handle the selected page from intent
+            val selectedPage = intent?.getIntExtra("selectedPage", 0) ?: 0
+            LaunchedEffect(selectedPage) {
+                if (selectedPage != pagerState.currentPage) {
+                    pagerState.scrollToPage(selectedPage)
+                }
+            }
+
+            MainTemplate(
                 snackBarHostState = snackBarHostState,
                 scope = scope,
                 pagerState = pagerState,
+                onNavigationItemSelected = { page ->
+                    scope.launch {
+                        pagerState.animateScrollToPage(page)
+                    }
+                },
                 mainContent = { innerPadding ->
                     HorizontalPager(
                         state = pagerState,

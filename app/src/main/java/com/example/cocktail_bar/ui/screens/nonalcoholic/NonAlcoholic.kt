@@ -41,7 +41,6 @@ fun NonAlcoholicScreen(
     val isLoading = viewModel.isNonAlcoholicLoading.value
     var selectedCocktail by remember { mutableIntStateOf(0) }
     var cocktailDetails by remember { mutableStateOf<Cocktail?>(null) }
-    val scrollState = rememberScrollState(initial = 0)
 
     LaunchedEffect(cocktails) {
         if (cocktails.isNotEmpty()) {
@@ -73,7 +72,7 @@ fun NonAlcoholicScreen(
                         .weight(4f)
                         .padding(end = 16.dp)
                         .align(Alignment.CenterVertically)
-                        .verticalScroll(scrollState)
+                        .verticalScroll(rememberScrollState())
                 ) {
                     if (cocktailDetails != null) {
                         Column {

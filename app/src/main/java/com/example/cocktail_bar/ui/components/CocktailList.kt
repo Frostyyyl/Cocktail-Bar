@@ -60,7 +60,7 @@ fun CocktailItem(index: Int, cocktail: ShortCocktail, onCocktailSelected: (Int) 
                 }
                 else {
                     val intent = Intent(context, DetailsActivity::class.java).apply {
-                        putExtra("id", cocktail.id) // Pass only the ID
+                        putExtra("id", cocktail.id)
                     }
                     context.startActivity(intent)
                 }
