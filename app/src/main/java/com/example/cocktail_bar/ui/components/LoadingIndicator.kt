@@ -1,4 +1,4 @@
-package com.example.cocktail_bar.components
+package com.example.cocktail_bar.ui.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize

@@ -1,4 +1,4 @@
-package com.example.cocktail_bar.components.layout
+package com.example.cocktail_bar.ui.components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppBar(
+fun TopBar(
     title: String = "Cocktail Bar",
     onListClick: (() -> Unit)
 ) {

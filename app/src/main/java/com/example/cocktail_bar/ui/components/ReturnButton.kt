@@ -1,15 +1,13 @@
-package com.example.cocktail_bar.components.layout
+package com.example.cocktail_bar.ui.components
 
 import android.app.Activity
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
@@ -24,9 +22,8 @@ fun ReturnButton() {
         )
     ) {
         Icon(
-            imageVector = Icons.Default.PlayArrow,
+            Icons.AutoMirrored.Filled.ArrowBack,
             contentDescription = "Return",
-            modifier = Modifier.rotate(180f),
             tint = Color.Black
         )
     }

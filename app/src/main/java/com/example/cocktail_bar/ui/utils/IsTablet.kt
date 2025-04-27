@@ -1,4 +1,4 @@
-package com.example.cocktail_bar.utility
+package com.example.cocktail_bar.ui.utils
 
 import android.content.res.Configuration
 import androidx.compose.runtime.Composable

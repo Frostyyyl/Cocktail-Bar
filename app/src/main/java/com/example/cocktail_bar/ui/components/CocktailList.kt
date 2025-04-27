@@ -1,15 +1,13 @@
-package com.example.cocktail_bar.components
+package com.example.cocktail_bar.ui.components
 
 import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -25,15 +23,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.example.cocktail_bar.api.Cocktail
-import com.example.cocktail_bar.DetailsActivity
 import com.example.cocktail_bar.R
-import com.example.cocktail_bar.api.CocktailShort
-import com.example.cocktail_bar.utility.isTablet
+import com.example.cocktail_bar.data.model.ShortCocktail
+import com.example.cocktail_bar.ui.screens.details.DetailsActivity
+import com.example.cocktail_bar.ui.utils.isTablet
 
 
 @Composable
-fun CocktailList(modifier: Modifier = Modifier, cocktails: List<CocktailShort>,
+fun CocktailList(modifier: Modifier = Modifier, cocktails: List<ShortCocktail>,
                  onCocktailSelected: (Int) -> Unit) {
     LazyColumn(modifier = modifier
         .padding(16.dp)
@@ -46,7 +43,7 @@ fun CocktailList(modifier: Modifier = Modifier, cocktails: List<CocktailShort>,
 
 
 @Composable
-fun CocktailItem(index: Int, cocktail: CocktailShort, onCocktailSelected: (Int) -> Unit) {
+fun CocktailItem(index: Int, cocktail: ShortCocktail, onCocktailSelected: (Int) -> Unit) {
     val context = LocalContext.current
     val paddingPrimary = 16.dp
     val isTablet = isTablet()
@@ -63,7 +60,7 @@ fun CocktailItem(index: Int, cocktail: CocktailShort, onCocktailSelected: (Int) 
                 }
                 else {
                     val intent = Intent(context, DetailsActivity::class.java).apply {
-                        putExtra("id", cocktail.idDrink) // Pass only the ID
+                        putExtra("id", cocktail.id) // Pass only the ID
                     }
                     context.startActivity(intent)
                 }
@@ -71,7 +68,7 @@ fun CocktailItem(index: Int, cocktail: CocktailShort, onCocktailSelected: (Int) 
         verticalAlignment = Alignment.CenterVertically
     ) {
         AsyncImage(
-            model = cocktail.strDrinkThumb,
+            model = cocktail.imageLink,
             modifier = Modifier
                 .width(100.dp)
                 .height(100.dp),
@@ -81,7 +78,7 @@ fun CocktailItem(index: Int, cocktail: CocktailShort, onCocktailSelected: (Int) 
 
         Column {
             Text(
-                text = cocktail.strDrink,
+                text = cocktail.name,
                 modifier = Modifier.padding(paddingPrimary / 2),
                 fontWeight = FontWeight.Bold
             )

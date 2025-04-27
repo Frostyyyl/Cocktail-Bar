@@ -1,4 +1,4 @@
-package com.example.cocktail_bar.components.cards
+package com.example.cocktail_bar.ui.screens.nonalcoholic
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,18 +21,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.cocktail_bar.api.Cocktail
-import com.example.cocktail_bar.api.CocktailViewModel
-import com.example.cocktail_bar.components.CocktailDetails
-import com.example.cocktail_bar.components.CocktailList
-import com.example.cocktail_bar.components.LoadingIndicator
-import com.example.cocktail_bar.components.SendSMSButton
-import com.example.cocktail_bar.components.Timer
-import com.example.cocktail_bar.utility.isTablet
+import com.example.cocktail_bar.data.model.Cocktail
+import com.example.cocktail_bar.data.service.CocktailViewModel
+import com.example.cocktail_bar.ui.components.CocktailDetails
+import com.example.cocktail_bar.ui.components.CocktailList
+import com.example.cocktail_bar.ui.components.LoadingIndicator
+import com.example.cocktail_bar.ui.components.ShareButton
+import com.example.cocktail_bar.ui.components.Timer
+import com.example.cocktail_bar.ui.utils.isTablet
 import kotlinx.coroutines.CoroutineScope
 
 @Composable
-fun NonAlcoholicCategoryCard(
+fun NonAlcoholicScreen(
     viewModel: CocktailViewModel,
     snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
     scope: CoroutineScope = rememberCoroutineScope(),
@@ -46,7 +46,7 @@ fun NonAlcoholicCategoryCard(
     LaunchedEffect(cocktails) {
         if (cocktails.isNotEmpty()) {
             selectedCocktail = 0
-            viewModel.fetchCocktailDetails(cocktails[0].idDrink) { cocktail ->
+            viewModel.fetchCocktailDetails(cocktails[0].id) { cocktail ->
                 cocktailDetails = cocktail
             }
         }
@@ -54,7 +54,7 @@ fun NonAlcoholicCategoryCard(
 
     LaunchedEffect(selectedCocktail) {
         if (cocktails.isNotEmpty()) {
-            viewModel.fetchCocktailDetails(cocktails[selectedCocktail].idDrink) { cocktail ->
+            viewModel.fetchCocktailDetails(cocktails[selectedCocktail].id) { cocktail ->
                 cocktailDetails = cocktail
             }
         }
@@ -89,8 +89,8 @@ fun NonAlcoholicCategoryCard(
                 Box(
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    SendSMSButton(
-                        cocktailName = cocktails[selectedCocktail].strDrink,
+                    ShareButton(
+                        cocktailName = cocktails[selectedCocktail].name,
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
                             .padding(16.dp),

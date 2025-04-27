@@ -1,4 +1,4 @@
-package com.example.cocktail_bar.components.layout
+package com.example.cocktail_bar.ui.components
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -42,7 +42,7 @@ fun NavigationDrawer(
                 )
             }
             Text(
-                "Cocktail Bar App",
+                "Cocktail Bar",
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(16.dp)
             )
@@ -52,7 +52,7 @@ fun NavigationDrawer(
         )
         NavigationDrawerItem(
             label = { Text(
-                text = "Main page",
+                text = "Home",
                 style = MaterialTheme.typography.titleMedium,
                 color = Color.Black
             ) },

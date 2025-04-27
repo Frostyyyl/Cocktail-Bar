@@ -13,10 +13,10 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import com.example.cocktail_bar.api.CocktailViewModel
-import com.example.cocktail_bar.components.cards.AlcoholicCategoryCard
-import com.example.cocktail_bar.components.cards.HomeCard
-import com.example.cocktail_bar.components.cards.NonAlcoholicCategoryCard
+import com.example.cocktail_bar.data.service.CocktailViewModel
+import com.example.cocktail_bar.ui.screens.alcoholic.AlcoholicScreen
+import com.example.cocktail_bar.ui.screens.home.HomeScreen
+import com.example.cocktail_bar.ui.screens.nonalcoholic.NonAlcoholicScreen
 
 class MainActivity : ComponentActivity() {
     private val viewModel: CocktailViewModel by viewModels()
@@ -31,7 +31,7 @@ class MainActivity : ComponentActivity() {
                 3
             })
 
-            CocktailActivityTemplate (
+            ActivityTemplate (
                 snackBarHostState = snackBarHostState,
                 scope = scope,
                 pagerState = pagerState,
@@ -40,16 +40,16 @@ class MainActivity : ComponentActivity() {
                         state = pagerState,
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(innerPadding) // is this useful for anything?
+                            .padding(innerPadding)
                     ) { page ->
                         when(page) {
-                            0 -> HomeCard()
-                            1 -> AlcoholicCategoryCard(
+                            0 -> HomeScreen()
+                            1 -> AlcoholicScreen(
                                 viewModel = viewModel,
                                 snackBarHostState = snackBarHostState,
                                 scope = scope
                             )
-                            2 -> NonAlcoholicCategoryCard(
+                            2 -> NonAlcoholicScreen(
                                 viewModel = viewModel,
                                 snackBarHostState = snackBarHostState,
                                 scope = scope

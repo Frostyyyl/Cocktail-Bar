@@ -1,4 +1,4 @@
-package com.example.cocktail_bar.components.cards
+package com.example.cocktail_bar.ui.screens.home
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,7 +13,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun HomeCard() {
+fun HomeScreen() {
     Column(
         modifier = Modifier.padding(16.dp)
     ) {
@@ -24,13 +24,13 @@ fun HomeCard() {
             horizontalAlignment = Alignment.CenterHorizontally
         ){
             Text(
-                text = "Welcome to Cocktail Bar App",
+                text = "Welcome to the Cocktail Bar App",
                 style = MaterialTheme.typography.titleLarge,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
             Text(
-                text = "Start by searching through alcoholic or non-alcoholic drinks",
+                text = "Browse the cocktail lists, view the cocktail recipes and measure time it takes to assemble them!",
                 style = MaterialTheme.typography.titleMedium,
                 textAlign = TextAlign.Center
             )

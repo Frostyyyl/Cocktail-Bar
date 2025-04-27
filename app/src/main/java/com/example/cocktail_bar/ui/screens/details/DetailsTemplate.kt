@@ -1,4 +1,4 @@
-package com.example.cocktail_bar
+package com.example.cocktail_bar.ui.screens.details
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,22 +14,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import com.example.cocktail_bar.components.layout.AppBar
-import com.example.cocktail_bar.components.layout.CardBar
-import com.example.cocktail_bar.components.layout.NavigationDrawer
+import com.example.cocktail_bar.ui.components.NavigationDrawer
+import com.example.cocktail_bar.ui.components.TopBar
 import com.example.cocktail_bar.ui.theme.CocktailBarTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
-fun CocktailActivityTemplate (
-    title: String = "Cocktail Bar App",
+fun DetailsTemplate (
+    title: String = "Cocktail Bar",
     snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
     scope: CoroutineScope = rememberCoroutineScope(),
     pagerState: PagerState = rememberPagerState(pageCount = { 3 }),
     mainContent: @Composable (PaddingValues) -> Unit
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+
     CocktailBarTheme {
         ModalNavigationDrawer(
             drawerState = drawerState,
@@ -46,22 +46,16 @@ fun CocktailActivityTemplate (
             },
             gesturesEnabled = true,
 
-        ) {
+            ) {
             Scaffold(
                 topBar = {
-                    AppBar(
+                    TopBar(
                         title = title,
                         onListClick = {
                             scope.launch {
                                 drawerState.apply { open() }
                             }
                         }
-                    )
-                },
-                bottomBar = {
-                    CardBar(
-                        pagerState = pagerState,
-                        scope = scope
                     )
                 },
                 modifier = Modifier.fillMaxSize(),
