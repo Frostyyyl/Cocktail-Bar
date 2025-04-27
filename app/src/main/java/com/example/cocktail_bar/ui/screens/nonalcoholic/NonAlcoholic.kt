@@ -70,7 +70,7 @@ fun NonAlcoholicScreen(
                 Box(
                     Modifier
                         .weight(4f)
-                        .padding(end = 16.dp)
+                        .padding(end = 16.dp, top = 16.dp, bottom = 16.dp)
                         .align(Alignment.CenterVertically)
                         .verticalScroll(rememberScrollState())
                 ) {

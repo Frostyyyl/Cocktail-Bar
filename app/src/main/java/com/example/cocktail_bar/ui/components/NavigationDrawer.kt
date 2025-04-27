@@ -99,21 +99,21 @@ fun NavigationDrawer(
                 }
             }
         )
-        HorizontalDivider(
-            color = MaterialTheme.colorScheme.onPrimary
-        )
-        NavigationDrawerItem(
-            label = {
-                Text(
-                    text = "Timer",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = Color.Black
-                )
-            },
-            selected = false,
-            onClick = {
-                // Handle Timer case if needed
-            }
-        )
+//        HorizontalDivider(
+//            color = MaterialTheme.colorScheme.onPrimary
+//        )
+//        NavigationDrawerItem(
+//            label = {
+//                Text(
+//                    text = "Timer",
+//                    style = MaterialTheme.typography.titleMedium,
+//                    color = Color.Black
+//                )
+//            },
+//            selected = false,
+//            onClick = {
+//                // Handle Timer case if needed
+//            }
+//        )
     }
 }
