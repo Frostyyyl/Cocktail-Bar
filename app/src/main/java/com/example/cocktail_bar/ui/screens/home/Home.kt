@@ -30,7 +30,7 @@ fun HomeScreen() {
                 modifier = Modifier.padding(bottom = 16.dp)
             )
             Text(
-                text = "Browse the cocktail lists, view the cocktail recipes and measure the time it takes to assemble them!",
+                text = "Browse the cocktail lists, view the cocktail recipes and measure the time it takes to assemble them",
                 style = MaterialTheme.typography.titleMedium,
                 textAlign = TextAlign.Center
             )

@@ -25,7 +25,6 @@ import com.example.cocktail_bar.ui.components.CocktailDetails
 import com.example.cocktail_bar.ui.components.ShareButton
 import com.example.cocktail_bar.ui.components.Timer
 
-
 class DetailsActivity : ComponentActivity() {
     private val detailsViewModel: DetailsViewModel by viewModels()
 
@@ -34,15 +33,19 @@ class DetailsActivity : ComponentActivity() {
         setContent {
             val snackBarHostState = remember { SnackbarHostState() }
             val scope = rememberCoroutineScope()
-
             val id = intent.getStringExtra("id") ?: ""
 
             LaunchedEffect(id) {
                 detailsViewModel.fetchCocktailDetails(id)
             }
 
+            val cocktail = detailsViewModel.cocktailState.value
+            val title = cocktail?.name ?: "Cocktail Details"
+            val imageLink = cocktail?.imageLink ?: ""
+
             DetailsTemplate(
-                title = "Cocktail Details",
+                title = title,
+                imageLink = imageLink,
                 snackBarHostState = snackBarHostState,
                 scope = scope,
                 onNavigationItemSelected = { page ->
@@ -63,25 +66,26 @@ class DetailsActivity : ComponentActivity() {
                             Text("Loading details...")
                         }
                     } else {
-                        detailsViewModel.cocktailState.value?.let { cocktail ->
+                        cocktail?.let {
                             Box(
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .padding(innerPadding)
                             ) {
                                 Column(
-                                    modifier = Modifier.padding(horizontal = 16.dp)
+                                    modifier = Modifier
+                                        .padding(horizontal = 16.dp)
                                         .verticalScroll(rememberScrollState())
                                 ) {
                                     Spacer(modifier = Modifier.size(16.dp))
-                                    CocktailDetails(cocktail = cocktail)
+                                    CocktailDetails(cocktail = it)
                                     Spacer(modifier = Modifier.size(24.dp))
                                     Timer(minutes = 1, seconds = 0)
                                     Spacer(modifier = Modifier.size(80.dp))
                                 }
 
                                 ShareButton(
-                                    cocktailName = cocktail.name,
+                                    cocktailName = it.name,
                                     modifier = Modifier
                                         .align(Alignment.BottomStart)
                                         .padding(horizontal = 24.dp, vertical = 12.dp),
