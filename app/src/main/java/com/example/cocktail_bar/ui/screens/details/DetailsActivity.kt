@@ -1,6 +1,5 @@
 package com.example.cocktail_bar.ui.screens.details
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -24,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import com.example.cocktail_bar.ui.components.CocktailDetails
 import com.example.cocktail_bar.ui.components.ShareButton
 import com.example.cocktail_bar.ui.components.Timer
+import kotlinx.coroutines.launch
 
 class DetailsActivity : ComponentActivity() {
     private val detailsViewModel: DetailsViewModel by viewModels()
@@ -34,6 +34,7 @@ class DetailsActivity : ComponentActivity() {
             val snackBarHostState = remember { SnackbarHostState() }
             val scope = rememberCoroutineScope()
             val id = intent.getStringExtra("id") ?: ""
+            val scrollState = rememberScrollState()
 
             LaunchedEffect(id) {
                 detailsViewModel.fetchCocktailDetails(id)
@@ -48,12 +49,22 @@ class DetailsActivity : ComponentActivity() {
                 imageLink = imageLink,
                 snackBarHostState = snackBarHostState,
                 scope = scope,
-                onNavigationItemSelected = { page ->
-                    val resultIntent = Intent().apply {
-                        putExtra("selectedPage", page)
-                    }
-                    setResult(RESULT_OK, resultIntent)
+                onNavigationItemSelected = {
                     finish()
+                },
+                onScrollToSection = { section ->
+                    when (section) {
+                        "Information" -> {
+                            scope.launch {
+                                scrollState.animateScrollTo(0)
+                            }
+                        }
+                        "Timer" -> {
+                            scope.launch {
+                                scrollState.animateScrollTo(scrollState.maxValue)
+                            }
+                        }
+                    }
                 },
                 mainContent = { innerPadding ->
                     if (detailsViewModel.isLoading.value) {
@@ -75,7 +86,7 @@ class DetailsActivity : ComponentActivity() {
                                 Column(
                                     modifier = Modifier
                                         .padding(horizontal = 16.dp)
-                                        .verticalScroll(rememberScrollState())
+                                        .verticalScroll(scrollState) // Use the same scrollState
                                 ) {
                                     Spacer(modifier = Modifier.size(16.dp))
                                     CocktailDetails(cocktail = it)

@@ -1,8 +1,6 @@
-package com.example.cocktail_bar.ui.components
-
+package com.example.cocktail_bar.ui.screens.details
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.HorizontalDivider
@@ -22,10 +20,10 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun NavigationDrawer(
-    pagerState: PagerState,
     scope: CoroutineScope,
     onBackClick: () -> Unit,
-    onNavigationItemSelected: (Int) -> Unit = {}
+    onNavigationItemSelected: (Int) -> Unit = {},
+    onScrollToSection: (String) -> Unit = {} // New parameter for section navigation
 ) {
     ModalDrawerSheet(
         drawerContainerColor = MaterialTheme.colorScheme.primary
@@ -43,7 +41,7 @@ fun NavigationDrawer(
                 )
             }
             Text(
-                "Cocktail Bar",
+                "Cocktail Details",
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(16.dp)
             )
@@ -67,10 +65,13 @@ fun NavigationDrawer(
                 }
             }
         )
+        HorizontalDivider(
+            color = MaterialTheme.colorScheme.onPrimary
+        )
         NavigationDrawerItem(
             label = {
                 Text(
-                    text = "Alcoholic cocktails",
+                    text = "Information",
                     style = MaterialTheme.typography.titleMedium,
                     color = Color.Black
                 )
@@ -79,14 +80,14 @@ fun NavigationDrawer(
             onClick = {
                 scope.launch {
                     onBackClick()
-                    onNavigationItemSelected(1)
+                    onScrollToSection("Information")
                 }
             }
         )
         NavigationDrawerItem(
             label = {
                 Text(
-                    text = "Non-Alcoholic cocktails",
+                    text = "Timer",
                     style = MaterialTheme.typography.titleMedium,
                     color = Color.Black
                 )
@@ -95,25 +96,9 @@ fun NavigationDrawer(
             onClick = {
                 scope.launch {
                     onBackClick()
-                    onNavigationItemSelected(2)
+                    onScrollToSection("Timer")
                 }
             }
         )
-//        HorizontalDivider(
-//            color = MaterialTheme.colorScheme.onPrimary
-//        )
-//        NavigationDrawerItem(
-//            label = {
-//                Text(
-//                    text = "Timer",
-//                    style = MaterialTheme.typography.titleMedium,
-//                    color = Color.Black
-//                )
-//            },
-//            selected = false,
-//            onClick = {
-//                // Handle Timer case if needed
-//            }
-//        )
     }
 }

@@ -1,4 +1,4 @@
-package com.example.cocktail_bar
+package com.example.cocktail_bar.ui.screens.main
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

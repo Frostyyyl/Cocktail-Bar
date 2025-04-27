@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.pager.PagerState
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material3.DrawerValue
@@ -39,7 +37,6 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import coil.compose.AsyncImage
-import com.example.cocktail_bar.ui.components.NavigationDrawer
 import com.example.cocktail_bar.ui.theme.CocktailBarTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -52,8 +49,8 @@ fun DetailsTemplate(
     imageLink: String,
     snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
     scope: CoroutineScope = rememberCoroutineScope(),
-    pagerState: PagerState = rememberPagerState(pageCount = { 3 }),
     onNavigationItemSelected: (Int) -> Unit = {},
+    onScrollToSection: (String) -> Unit = {},
     mainContent: @Composable (PaddingValues) -> Unit
 ) {
     val configuration = LocalConfiguration.current
@@ -67,10 +64,10 @@ fun DetailsTemplate(
             drawerState = drawerState,
             drawerContent = {
                 NavigationDrawer(
-                    pagerState = pagerState,
                     scope = scope,
                     onBackClick = { scope.launch { drawerState.close() } },
-                    onNavigationItemSelected = onNavigationItemSelected
+                    onNavigationItemSelected = onNavigationItemSelected,
+                    onScrollToSection = onScrollToSection
                 )
             },
             gesturesEnabled = true

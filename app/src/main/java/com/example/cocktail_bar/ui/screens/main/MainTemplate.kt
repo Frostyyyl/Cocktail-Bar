@@ -1,4 +1,4 @@
-package com.example.cocktail_bar
+package com.example.cocktail_bar.ui.screens.main
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,7 +15,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import com.example.cocktail_bar.ui.components.BottomBar
-import com.example.cocktail_bar.ui.components.NavigationDrawer
 import com.example.cocktail_bar.ui.components.TopBar
 import com.example.cocktail_bar.ui.theme.CocktailBarTheme
 import kotlinx.coroutines.CoroutineScope
