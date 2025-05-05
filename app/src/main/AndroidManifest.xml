@@ -15,18 +15,23 @@
         android:theme="@style/Theme.CocktailBar"
         tools:targetApi="31">
         <activity
-            android:name=".ui.screens.main.MainActivity"
+            android:name=".ui.screens.main.SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.CocktailBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
+            android:name=".ui.screens.main.MainActivity"
+            android:exported="true"
+            android:theme="@style/Theme.CocktailBar">
+        </activity>
+        <activity
             android:name=".ui.screens.details.DetailsActivity"
-            android:exported="true"/>
+            android:exported="true"
+            android:theme="@style/Theme.CocktailBar"/>
 
 
     </application>
