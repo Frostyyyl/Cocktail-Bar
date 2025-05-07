@@ -17,6 +17,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,11 +40,15 @@ fun NonAlcoholicScreen(
 ) {
     val cocktails = viewModel.nonAlcoholicCocktails
     val isLoading = viewModel.isNonAlcoholicLoading.value
-    var selectedCocktail by remember { mutableIntStateOf(0) }
-    var cocktailDetails by remember { mutableStateOf<Cocktail?>(null) }
+    var selectedCocktail by rememberSaveable { mutableIntStateOf(0) }
+    var cocktailDetails by rememberSaveable { mutableStateOf<Cocktail?>(null) }
 
     LaunchedEffect(cocktails) {
-        if (cocktails.isNotEmpty()) {
+        if (cocktails.isNotEmpty() && selectedCocktail >= cocktails.indices.first && selectedCocktail <= cocktails.indices.last) {
+            viewModel.fetchCocktailDetails(cocktails[selectedCocktail].id) { cocktail ->
+                cocktailDetails = cocktail
+            }
+        } else if (cocktails.isNotEmpty()) {
             selectedCocktail = 0
             viewModel.fetchCocktailDetails(cocktails[0].id) { cocktail ->
                 cocktailDetails = cocktail
@@ -63,31 +68,30 @@ fun NonAlcoholicScreen(
         LoadingIndicator()
     } else {
         if (isTablet()) {
-            Row {
-                CocktailList(Modifier.weight(3f), cocktails) { index: Int ->
-                    selectedCocktail = index
-                }
-                Box(
-                    Modifier
-                        .weight(4f)
-                        .padding(end = 16.dp, top = 16.dp, bottom = 16.dp)
-                        .align(Alignment.CenterVertically)
-                        .verticalScroll(rememberScrollState())
-                ) {
-                    if (cocktailDetails != null) {
-                        Column {
-                            CocktailDetails(cocktail = cocktailDetails!!)
-                            Spacer(modifier = Modifier.size(24.dp))
-                            Timer(key = selectedCocktail, minutes = 1, seconds = 0)
+            Box(modifier = Modifier.fillMaxSize()) {
+                Row {
+                    CocktailList(Modifier.weight(3f), cocktails) { index: Int ->
+                        selectedCocktail = index
+                    }
+
+                    Box(
+                        Modifier
+                            .weight(4f)
+                            .padding(end = 16.dp, top = 16.dp, bottom = 16.dp)
+                            .align(Alignment.CenterVertically)
+                            .verticalScroll(rememberScrollState())
+                    ) {
+                        if (cocktailDetails != null) {
+                            Column {
+                                CocktailDetails(cocktail = cocktailDetails!!)
+                                Spacer(modifier = Modifier.size(24.dp))
+                                Timer(key = selectedCocktail, minutes = 1, seconds = 0)
+                            }
                         }
                     }
                 }
-            }
 
-            if (cocktails.isNotEmpty()) {
-                Box(
-                    modifier = Modifier.fillMaxSize()
-                ) {
+                if (cocktails.isNotEmpty()) {
                     ShareButton(
                         cocktailName = cocktails[selectedCocktail].name,
                         modifier = Modifier
