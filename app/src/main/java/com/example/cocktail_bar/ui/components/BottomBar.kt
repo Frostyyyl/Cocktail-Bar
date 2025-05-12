@@ -43,7 +43,6 @@ fun BottomBar(
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = Color.White
             )
-
             Button(
                 onClick = { scope.launch { pagerState.animateScrollToPage(0) } },
                 modifier = tileModifier,

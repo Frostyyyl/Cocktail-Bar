@@ -13,6 +13,7 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -32,7 +33,9 @@ fun TopBar(
         },
         navigationIcon = {
             IconButton(onClick = onListClick) {
-                Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Navigation Drawer")
+                Icon(Icons.AutoMirrored.Filled.List,
+                    contentDescription = "Navigation Drawer",
+                    tint = Color.Black)
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(

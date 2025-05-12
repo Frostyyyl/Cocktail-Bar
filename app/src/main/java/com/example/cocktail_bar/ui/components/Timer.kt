@@ -48,23 +48,17 @@ fun Timer(key: Int = 0, minutes: Int, seconds: Int) {
     var startTimeSeconds by rememberSaveable(key) { mutableIntStateOf(seconds) }
     var timeLeftMinutes by rememberSaveable(key) { mutableIntStateOf(minutes) }
     var timeLeftSeconds by rememberSaveable(key) { mutableIntStateOf(seconds) }
-
     var isRunning by rememberSaveable(key) { mutableStateOf(false) }
     var isReset by rememberSaveable(key) { mutableStateOf(true) }
-
     var lastUpdateTime by rememberSaveable(key) { mutableLongStateOf(0L) }
     var totalPausedTime by rememberSaveable(key) { mutableLongStateOf(0L) }
-
     val mediumPadding = 26.dp
     val bigPadding = 20.dp
-
-
     LaunchedEffect(Unit) {
         if (isRunning) {
             lastUpdateTime = System.currentTimeMillis() - totalPausedTime
         }
     }
-
     // Timer logic
     LaunchedEffect(isRunning) {
         if (isRunning) {
@@ -72,29 +66,23 @@ fun Timer(key: Int = 0, minutes: Int, seconds: Int) {
 
             while (isRunning && (timeLeftMinutes > 0 || timeLeftSeconds > 0)) {
                 delay(1000)
-
                 val currentTime = System.currentTimeMillis()
                 val elapsed = currentTime - lastUpdateTime - totalPausedTime
                 val secondsPassed = (elapsed / 1000).toInt()
-
                 if (secondsPassed > 0) {
                     val totalSeconds = timeLeftMinutes * 60 + timeLeftSeconds
                     val newTotalSeconds = (totalSeconds - secondsPassed).coerceAtLeast(0)
-
                     timeLeftMinutes = newTotalSeconds / 60
                     timeLeftSeconds = newTotalSeconds % 60
-
                     lastUpdateTime = currentTime
                     totalPausedTime = 0
                 }
             }
-
             if (timeLeftMinutes == 0 && timeLeftSeconds == 0) {
                 isRunning = false
             }
         }
     }
-
     fun updateTime(minutes: Int, seconds: Int) {
         if (!isRunning) {
             if (isReset) {
@@ -107,7 +95,6 @@ fun Timer(key: Int = 0, minutes: Int, seconds: Int) {
             totalPausedTime = 0
         }
     }
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -117,24 +104,20 @@ fun Timer(key: Int = 0, minutes: Int, seconds: Int) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Timer",
-            textAlign = TextAlign.Center,
+            text = "Timer", textAlign = TextAlign.Center,
             style = MaterialTheme.typography.titleLarge,
         )
-
         Spacer(modifier = Modifier.size(bigPadding))
-
         // Time increment buttons
         Row(verticalAlignment = Alignment.CenterVertically) {
             TimeButton(Icons.Default.KeyboardArrowUp) {
-                updateTime(timeLeftMinutes + 1, timeLeftSeconds)
+                updateTime(timeLeftMinutes + 1, timeLeftSeconds) 
             }
             Spacer(modifier = Modifier.size(mediumPadding))
             TimeButton(Icons.Default.KeyboardArrowUp) {
-                updateTime(timeLeftMinutes, timeLeftSeconds + 1)
+                updateTime(timeLeftMinutes, timeLeftSeconds + 1) 
             }
         }
-
         // Time display
         Row(verticalAlignment = Alignment.CenterVertically) {
             BasicTextField(
@@ -166,7 +149,6 @@ fun Timer(key: Int = 0, minutes: Int, seconds: Int) {
                 enabled = !isRunning
             )
         }
-
         // Time decrement buttons
         Row(verticalAlignment = Alignment.CenterVertically) {
             TimeButton(Icons.Default.KeyboardArrowDown) {
@@ -177,9 +159,7 @@ fun Timer(key: Int = 0, minutes: Int, seconds: Int) {
                 updateTime(timeLeftMinutes, timeLeftSeconds - 1)
             }
         }
-
         Spacer(modifier = Modifier.size(bigPadding))
-
         // Control buttons
         Row {
             // Play
@@ -189,32 +169,27 @@ fun Timer(key: Int = 0, minutes: Int, seconds: Int) {
                     if (totalPausedTime > 0) {
                         // Adjust for time spent paused
                         lastUpdateTime = System.currentTimeMillis() - totalPausedTime
-                        totalPausedTime = 0
-                    }
+                        totalPausedTime = 0 
+                    } 
                 },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.secondary
-                )
+                    containerColor = MaterialTheme.colorScheme.secondary)
             ) {
                 Icon(
                     imageVector = Icons.Default.PlayArrow,
                     contentDescription = "Play",
                     tint = Color.Black
-                )
+                ) 
             }
-
             Spacer(modifier = Modifier.size(bigPadding))
-
             // Pause
             Button(
                 onClick = {
                     isRunning = false
                     isReset = false
-                    totalPausedTime = System.currentTimeMillis() - lastUpdateTime - totalPausedTime
-                },
+                    totalPausedTime = System.currentTimeMillis() - lastUpdateTime - totalPausedTime },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.secondary
-                )
+                    containerColor = MaterialTheme.colorScheme.secondary)
             ) {
                 Row {
                     Spacer(modifier = Modifier.width(4.dp))
@@ -232,11 +207,9 @@ fun Timer(key: Int = 0, minutes: Int, seconds: Int) {
                             .background(Color.Black)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
-                }
+                } 
             }
-
             Spacer(modifier = Modifier.size(bigPadding))
-
             // Reset
             Button(
                 onClick = {
@@ -245,11 +218,10 @@ fun Timer(key: Int = 0, minutes: Int, seconds: Int) {
                     timeLeftMinutes = startTimeMinutes
                     timeLeftSeconds = startTimeSeconds
                     lastUpdateTime = System.currentTimeMillis()
-                    totalPausedTime = 0
+                    totalPausedTime = 0 
                 },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.secondary
-                )
+                    containerColor = MaterialTheme.colorScheme.secondary)
             ) {
                 Icon(
                     imageVector = Icons.Default.Refresh,

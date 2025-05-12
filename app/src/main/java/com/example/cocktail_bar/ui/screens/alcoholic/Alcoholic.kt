@@ -91,7 +91,6 @@ fun AlcoholicScreen(
                         }
                     }
                 }
-
                 if (cocktails.isNotEmpty()) {
                     ShareButton(
                         cocktailName = cocktails[selectedCocktail].name,

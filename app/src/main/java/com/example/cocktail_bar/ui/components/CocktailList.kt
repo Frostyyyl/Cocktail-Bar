@@ -33,21 +33,18 @@ import com.example.cocktail_bar.ui.utils.isTablet
 fun CocktailList(modifier: Modifier = Modifier, cocktails: List<ShortCocktail>,
                  onCocktailSelected: (Int) -> Unit) {
     LazyColumn(modifier = modifier
-        .padding(16.dp)
-    ) {
+        .padding(16.dp)) 
+    {
         itemsIndexed(cocktails) { index, cocktail ->
-            CocktailItem(index, cocktail, onCocktailSelected)
-        }
+            CocktailItem(index, cocktail, onCocktailSelected) 
+        } 
     }
 }
-
-
 @Composable
 fun CocktailItem(index: Int, cocktail: ShortCocktail, onCocktailSelected: (Int) -> Unit) {
     val context = LocalContext.current
     val paddingPrimary = 16.dp
     val isTablet = isTablet()
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -56,13 +53,13 @@ fun CocktailItem(index: Int, cocktail: ShortCocktail, onCocktailSelected: (Int) 
             .background(MaterialTheme.colorScheme.primary)
             .clickable {
                 if(isTablet) {
-                    onCocktailSelected(index)
+                    onCocktailSelected(index) 
                 }
                 else {
                     val intent = Intent(context, DetailsActivity::class.java).apply {
-                        putExtra("id", cocktail.id)
+                        putExtra("id", cocktail.id) 
                     }
-                    context.startActivity(intent)
+                    context.startActivity(intent) 
                 }
             },
         verticalAlignment = Alignment.CenterVertically
@@ -75,13 +72,11 @@ fun CocktailItem(index: Int, cocktail: ShortCocktail, onCocktailSelected: (Int) 
             contentDescription = "Cocktail Image",
             placeholder = painterResource(id = R.drawable.ic_launcher_background),
         )
-
         Column {
             Text(
                 text = cocktail.name,
                 modifier = Modifier.padding(paddingPrimary / 2),
-                fontWeight = FontWeight.Bold
-            )
+                fontWeight = FontWeight.Bold) 
+            } 
         }
-    }
 }

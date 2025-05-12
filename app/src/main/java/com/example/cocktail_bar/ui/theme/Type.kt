@@ -26,6 +26,11 @@ val Typography = Typography(
         letterSpacing = 0.sp,
         color = Color.Black
     ),
+
+    titleMedium = TextStyle(
+        color = Color.Black
+    ),
+
     labelSmall = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Medium,
